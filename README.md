@@ -1,4 +1,4 @@
-# MaiBot 表情生成桥接
+# 表情包制作桥接器
 
 把自部署的 Rust 表情引擎 [meme-generator-rs](https://github.com/MemeCrafters/meme-generator-rs) 接入 MaiBot。用中文关键词或斜杠命令直接生成表情，不依赖 LLM 判断意图。
 

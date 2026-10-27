@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "id": "github.pppalab.meme-generator-bridge",
-  "version": "0.1.0",
-  "name": "Meme Generator 桥接",
+  "version": "0.1.1",
+  "name": "表情包制作桥接器",
   "description": "通过确定性关键词和命令连接自部署 Rust meme-generator 服务",
   "author": {"name": "PPPALab", "url": "https://github.com/PPPALab"},
   "license": "MIT",

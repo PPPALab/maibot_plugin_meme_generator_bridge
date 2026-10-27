@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "maibot-plugin-meme-generator-bridge"
-version = "0.1.0"
+version = "0.1.1"
 description = "MaiBot SDK bridge to a self-hosted Rust meme generator"
 requires-python = ">=3.10"
 license = "MIT"
