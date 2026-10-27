@@ -1,0 +1,32 @@
+services:
+  meme-generator:
+    # Required: select an upstream version and pin its verified digest, or build the inspected source.
+    image: ${MEME_GENERATOR_IMAGE:?Set MEME_GENERATOR_IMAGE to a verified pinned image}
+    restart: unless-stopped
+    # Container-wide resource bounds, NOT a Rust request/concurrency limit.
+    mem_limit: 1g
+    cpus: 1.0
+    pids_limit: 128
+    environment:
+      MEME_HOME: /data
+      TZ: Asia/Shanghai
+      RUST_LOG: info
+    volumes:
+      - meme-data:/data
+    ports:
+      - "127.0.0.1:${MEME_PORT:-2233}:2233"
+    networks:
+      - meme-bridge
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # Official Dockerfile has no curl/wget; do not invent an in-container HTTP healthcheck.
+    # Probe GET /meme/version externally, as documented in README.
+
+volumes:
+  meme-data:
+
+networks:
+  meme-bridge:
