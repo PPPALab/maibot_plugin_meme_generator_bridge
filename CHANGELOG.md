@@ -20,4 +20,4 @@
 - 修正官方 SDK 解包后的引用消息读取，拒绝跨会话引用，不下载用户 URL 或搜索历史列表。
 - 索引优先选择当前字体可绘制的最短关键词，无可用候选时显示模板 key。
 - 限制网络时限、并发、排队、冷却、输入输出大小和缓存，重型生成失败不自动重试。
-- 采用正式插件 ID `github.pppalab.meme-generator-bridge`；旧本地 ID 的配置和数据需另行迁移。
+- 采用正式插件 ID `github.pppalab.meme-generator-bridge`。
