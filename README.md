@@ -1,121 +1,117 @@
 # MaiBot 表情生成桥接
 
-把自部署的 Rust 表情引擎 [meme-generator-rs](https://github.com/MemeCrafters/meme-generator-rs) 接入 MaiBot 的插件。
-
-通过关键词、真实 @ 和附图触发表情生成，不靠 LLM 判断意图。
+把自部署的 Rust 表情引擎 [meme-generator-rs](https://github.com/MemeCrafters/meme-generator-rs) 接入 MaiBot。用中文关键词或斜杠命令直接生成表情，不依赖 LLM 判断意图。
 
 ## 特性
 
-- `/表情帮助` 发一张全量关键词索引图，`/表情帮助 关键词` 返回要求与用法示例
-- 中文关键词直接触发，支持 @ 头像、当前消息附图与多段文字
-- 官方设置页热更新，无需重启宿主
-- 并发、排队、超时、冷却、输入/输出字节与像素均有限额
+- 关键词直接触发，支持真实 @、当前附图、同一会话引用图和多段文字
+- `/表情帮助` 发关键词索引图；支持详情、预览和制作命令
+- 官方设置页配置，保存后热更新，无需重启宿主
 - GIF 成品按表情发送，静态图按图片发送
-- 不使用外部图文渲染服务，不访问用户 URL
+- 超时、并发、排队、冷却和输入/输出大小均有限额
 
 ## 前置条件
 
-- MaiBot **1.3.15** 与 `maibot-plugin-sdk` **2.16.0**（清单声明的兼容范围；其他版本请自行核对）
-- 可用的 QQ 适配器插件（本插件不直接连接 QQ 协议，收发依赖宿主与适配器）
+- MaiBot **1.3.15** 与 `maibot-plugin-sdk` **2.16.0**
+- 可用的 QQ 适配器插件
 - 一个可访问的自部署 `meme-generator-rs` 服务
 
 ## 部署 Rust 服务
 
-`deploy/compose.yaml` 提供了带资源限制的示例，配合 `deploy/.env` 使用：
+`deploy/compose.yaml` 提供了带资源限制的示例：
 
 ```sh
 cp deploy/.env.example deploy/.env
-# 填入你本机核验过的镜像与端口
+# 填入核验过的镜像 digest 与端口
 docker compose --env-file deploy/.env -f deploy/compose.yaml up -d
 ```
 
 ```dotenv
-MEME_GENERATOR_IMAGE=ghcr.io/memecrafters/meme-generator-rs@sha256:<替换为你核验的 digest>
+MEME_GENERATOR_IMAGE=ghcr.io/memecrafters/meme-generator-rs@sha256:<核验后的 digest>
 MEME_PORT=2233
 ```
 
-- 示例镜像只作格式演示；请用 `docker buildx imagetools inspect` 等工具核验后固定 digest，不要长期依赖浮动标签。
-- `/data` 卷用于持久化引擎数据；端口默认只绑定 `127.0.0.1`，需要外部访问时自行加反向代理与认证。
-- MaiBot 也运行在 Docker 时，把两个容器接入同一用户网络，插件中的 `base_url` 用 `http://<服务名>:2233`，不要写 `localhost`。
+- 示例镜像只作格式演示；请核验后固定 digest。
+- 数据保存在 Docker 命名卷 `meme-data`，不会在当前目录生成 `data/`；`docker compose down -v` 会删除。
+- 端口默认只绑定 `127.0.0.1`。MaiBot 也在 Docker 时，把两个容器接入同一网络，`base_url` 用 `http://<服务名>:2233`，不要写 `localhost`。
 
 ## 安装插件
 
-1. 将本目录放入 MaiBot 的 `plugins/` 下，例如 `plugins/maibot_plugin_meme_generator_bridge/`。
-2. 依赖 `httpx`、`httpcore`、`Pillow` 由宿主插件依赖机制安装，SDK 由宿主提供。
-3. 索引图使用系统本地中日韩字体（Noto Sans CJK、Unifont 等）；没有可用字体时会退回文字清单。
+把插件目录放入 MaiBot 的 `plugins/` 下，例如 `plugins/maibot_plugin_meme_generator_bridge/`。
 
-插件 ID 为 `github.pppalab.meme-generator-bridge`；仓库名称仍为 `PPPALab/maibot_plugin_meme_generator_bridge`。
+1. 依赖 `httpx`、`httpcore`、`Pillow` 由宿主自动安装，SDK 由宿主提供。
+2. 索引图需要系统本地中日韩字体（Noto Sans CJK、Unifont 等）；缺失时按开关退回文字清单。
+3. 在官方设置页填写 `base_url` 并启用。`enabled` 默认关闭；`base_url` 是 meme-generator-rs 的根地址，不是 MaiBot 地址。
+
+插件 ID：`github.pppalab.meme-generator-bridge`。
 
 ## 配置
 
-配置在 MaiBot **官方插件设置页**完成，保存后热更新（进行中任务会取消、连接重建、关键词快照刷新）。四个分组：
+在 MaiBot **官方插件设置页**完成，保存后热更新。
 
-| 分组 | 字段 | 说明 |
-| --- | --- | --- |
-| plugin | `enabled` | 插件总开关 |
-| plugin | `base_url` | 引擎根地址，不含 API 路径 |
-| plugin | `allowed_groups` | 群白名单；**留空表示允许全部群**，非空仅允许所列群 |
-| plugin | `allow_private` | 是否允许私聊，独立于群名单 |
-| plugin | `allow_quoted_images` | 是否允许从当前会话的引用消息读取已入库图片 |
-| plugin | `disabled_templates` | 禁用的模板 key 或精确关键词 |
-| plugin | `timeout` / `operation_timeout` | 单次请求超时 / 完整命令超时 |
-| plugin | `concurrency` / `max_waiters` | 同时执行数 / 最大排队数 |
-| menu | `image_enabled` / `text_fallback` | 是否发索引图 / 失败时是否发一条文字清单 |
-| keywords | `enabled` / `exclusions` / `refresh_seconds` | 关键词触发开关 / 冲突排除词 / 快照刷新间隔 |
-| avatar | `enabled`、超时、并发、缓存 | 通过官方头像接口取真实 @ 头像 |
+- 服务：`enabled`（默认关闭）、`base_url`（Rust 根地址，不含路径、认证或查询参数）
+- 权限：`allowed_groups`（留空允许全部群）、`allow_private`、`allow_quoted_images`
+- 模板与触发：`disabled_templates`、`keywords.enabled`、`keywords.exclusions`
+- 限额：`timeout`、`operation_timeout`、`concurrency`、`max_waiters`、`cooldown`
+- 菜单与头像：`menu.image_enabled`、`menu.text_fallback`、`avatar.enabled` 及缓存
 
-其余限额（输入输出字节、像素、文字长度、冷却、队列超时等）同样在设置页，默认值适配常见部署，按需收紧。
+其余输入/输出大小、图片数量和文字长度等限额也在设置页。
 
 ## 使用
 
 ```text
-/表情帮助                 一张全量关键词索引图
-/表情帮助 关键词           该模板所需图片/文字数量与用法示例
-/表情列表                 同 /表情帮助
-/表情详情 模板key          参数与说明
-/表情预览 模板key          只生成预览图
-/做表情 模板key "文字1"     生成并发送
+/表情帮助 [关键词]              无参数发索引图；带关键词查看参数与用法
+/表情列表 [关键词]              同 /表情帮助
+/表情详情 <模板 key 或关键词>    参数与说明
+/表情预览 <模板 key 或关键词>    只生成预览图
+/做表情 <模板 key 或关键词> "文字1" "文字2"
 ```
 
-关键词可以直接触发，不必写斜杠命令；引用一条图片消息后发送「锤」即用该图生成：
+关键词可以直接触发：
 
 ```text
 关键词 @目标
 关键词（当前消息附图）
 关键词 "第一段文字" "含 空格的第二段"
 @机器人 关键词
+例 锤@x
 ```
 
-- 没有引用图片时，真实 @ 无论在关键词前后都按原顺序作为头像输入，包括 @机器人。
-- 当前没有附图而引用了图片时，使用引用图，不再取 @ 头像；当前附图仍优先，不混入引用图。引用图不可用时明确报错，不偷偷改用头像。
-- 附图必须附在当前消息里，数量与文字段数需满足模板要求；索引图中的长关键词会被省略，用 `/表情帮助 关键词` 查看完整信息。
-- 未命中模板时只提示并给少量相近候选，不会替你选择或调用模型。
+图片与 @ 的取值顺序：
+
+1. 当前消息有图片/表情：使用当前图片和所有 @，按消息顺序；引用图不参与。
+2. 当前消息没有图片、引用了同一会话消息：使用引用图，@ 不参与（需开启 `allow_quoted_images`）。
+3. 两者都没有：使用所有 @ 头像。
+
+- @ 机器人也算 @，前后位置都支持；只认结构化 @ID，不支持 @全体成员或按昵称猜测。
+- 当前附图与引用图不混用；引用消息无可用图片会报错，不会改用 @ 头像。
+- 图片总数受 `max_images` 限制（含 @ 头像）；文字必须显式给出。
+- 引用图需仍在宿主图片库；机器人发出但未入库的表情可能不可用。
+- 索引图每个模板只列一个最短关键词，长词用 `/表情帮助 关键词` 查看。
 
 ## 限制
 
-- 支持引用一条图片消息后接关键词/命令（图片需仍在宿主图片库中）；仍不支持合并转发节点内图片与用户提供的图片 URL。
-- 不支持模板的高级 `options` 自定义。
+- 不支持合并转发节点内的图片、用户提供的图片 URL 和模板高级 `options` 自定义。
 - @ 头像依赖适配器提供的官方头像接口，取不到时请直接附图。
-- 上游 0.2.3 不支持 `server.body_limit` / `server.max_concurrent_tasks` 这两个可配置项，不能据此推断没有其他默认限制；部署时仍应设置插件限额与 Docker 资源限制。
-- 多图模板的图片逐张上传，网络失败时不自动重试。
-- 同一关键词对应多个模板时返回候选 key，不擅自选择。
+- 上游 0.2.3 不支持 `server.body_limit` / `server.max_concurrent_tasks` 这两个可配置项，不能据此推断没有其他默认限制。
+- 多图模板逐张上传，失败不自动重试；同一关键词对应多个模板时返回候选 key，不擅自选择。
 
 ## 排障
 
-- **服务不可达**：检查 `base_url`、容器网络与引擎日志；MaiBot 在 Docker 内时不要用 `localhost`。
-- **索引图失败**：会按开关发送一条文字关键词清单；多为字体缺失或像素上限过低。
-- **模板缺失或被禁用**：以 `/表情帮助 关键词` 与引擎 `/meme/infos` 为准；检查 `disabled_templates`。
-- **GIF 不动**：是否动态播放取决于宿主与 QQ 客户端。
-- **发送失败**：插件不会自动重试，避免重复刷图；检查适配器回执与宿主 RPC 大小限制。
-- **生成超时或繁忙**：降低并发、选轻量模板；被保护熔断时按设置页说明递增恢复序号。
+- **服务不可达**：检查 `base_url`、容器网络和引擎日志；Docker 内不要写 `localhost`。
+- **引用图不可用**：图片可能未入库、已过期、来自其他会话，或是机器人发出但未入库的表情；重新附图即可。
+- **索引图失败**：会按开关发送文字清单；多为字体缺失或像素上限过低。
+- **生成超时或繁忙**：降低并发、选轻量模板；熔断后按设置页说明递增恢复序号。
 
 ## 隐私与数据
 
-- 用于制图的图片与文字发送到你配置的 `base_url` 引擎；成品交由宿主和 QQ 适配器发送。插件不收集遥测。
-- @ 头像功能通过宿主 `ctx.chat.get_avatar` 获取地址，再从受限的官方 QQ 头像 CDN 下载；不接受用户提供的任意 URL。
-- 引擎自身会在临时目录保留素材，通常约 10–20 分钟后清理；持久化数据在 `/data` 卷。
-- 插件的元数据、关键词与头像缓存都在内存中，条目数、字节数与有效期均有上限。
+- 制图用的图片和文字会发送到配置的 `base_url` 引擎；成品交由 MaiBot 和 QQ 适配器发送。插件不收集遥测。
+- 引用图通过 MaiBot 宿主 `message.get_by_id` 读取，仅限当前会话；@ 头像通过宿主 `get_avatar` 获取地址后，从受限的 QQ 官方头像 CDN 下载。
+- 引擎临时素材的清理策略以上游版本为准；插件缓存仅在内存中有界保存。
 
 ## 许可与致谢
 
-本项目以 MIT 许可发布。上游 `meme-generator-rs` 亦为 MIT；表情模板与素材来自网络，不随本仓库分发，本项目不对素材授权作任何声明。
+本项目以 MIT 许可发布。表情模板与素材来自网络，不随本仓库分发。
+
+- [MemeCrafters/meme-generator](https://github.com/MemeCrafters/meme-generator)：Python 原版（MIT）。
+- [MemeCrafters/meme-generator-rs](https://github.com/MemeCrafters/meme-generator-rs)：本插件对接的 Rust 版（MIT）。
