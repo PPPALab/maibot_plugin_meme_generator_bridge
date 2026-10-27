@@ -373,7 +373,14 @@ class MemeBridgePlugin(MaiBotPlugin):
                 if command == "/表情预览":
                     data, kind = await self.client.preview(item["key"])
                 else:
-                    images = await collect_images(self.ctx, self.client, message, stream_id, self.avatars)
+                    images = await collect_images(
+                        self.ctx,
+                        self.client,
+                        message,
+                        stream_id,
+                        self.avatars,
+                        max_images_needed=item["params"]["max_images"],
+                    )
                     data, kind = await self.client.generate(item, args[1:], images)
                 encoded = base64.b64encode(data).decode("ascii")
                 sent = await (

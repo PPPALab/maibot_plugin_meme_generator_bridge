@@ -266,7 +266,6 @@ async def test_current_images_order():
 @pytest.mark.parametrize(
     "media,match",
     [
-        ([{"type": "reply", "data": {}}], "引用图"),
         ([{"type": "forward", "data": []}], "转发图"),
         ([{"type": "at", "data": {"target_user_id": "nickname"}}], "真实 QQ"),
         ([{"type": "image", "data": "http://127.0.0.1", "binary_data_base64": "!!!!"}], "Base64"),
@@ -276,6 +275,14 @@ async def test_reject_unsafe_media(media, match):
     client = MemeClient(settings())
     with pytest.raises(BridgeError, match=match):
         await collect_images(ctx(), client, message(media=media), "stream")
+    await client.close()
+
+
+async def test_reply_without_target_yields_no_images_and_no_history_read():
+    client = MemeClient(settings())
+    context = ctx()
+    assert await collect_images(context, client, message(media=[{"type": "reply", "data": {}}]), "stream") == []
+    context.message.get_by_id.assert_not_awaited()
     await client.close()
 
 
@@ -392,6 +399,7 @@ def test_real_sdk_config_manifest():
         "send.emoji",
         "chat.get_avatar",
         "chat.open_session",
+        "message.get_by_id",
     }
     assert manifest["dependencies"] == [
         {"type": "python_package", "name": "httpx", "version_spec": ">=0.27,<0.29"},

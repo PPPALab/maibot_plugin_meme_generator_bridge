@@ -3,7 +3,6 @@
 from typing import Any, Dict, List, Optional, Tuple
 
 import shlex
-import re
 
 from .inputs import segments
 
@@ -27,7 +26,7 @@ class KeywordIndex:
         raw = segments(message)
         start = 0
         for part in raw:
-            if part.get("type") in {"image", "emoji", "at"}:
+            if part.get("type") in {"image", "emoji", "at", "reply"}:
                 start += 1
             elif part.get("type") == "text" and isinstance(part.get("data"), str):
                 if part["data"].strip():
@@ -56,20 +55,9 @@ class KeywordIndex:
             end = start + leading
             if not tail and len(raw) > end and raw[end].get("type") not in {"image", "emoji", "at"}:
                 continue
-            # Official QQ adapter sets account_id from OneBot self_id. Only a
-            # matching numeric *prefix* @ is wake-up, never a nickname guess.
-            account = message.get("account_id", "")
-            known_self = isinstance(account, str) and re.fullmatch(r"[0-9]{5,20}", account)
-            prefix = [
-                dict(item)
-                for item in raw[:start]
-                if not (
-                    known_self
-                    and item.get("type") == "at"
-                    and isinstance(item.get("data"), dict)
-                    and item["data"].get("target_user_id") == account
-                )
-            ]
+            # Preserve every actual @, including the bot, in its original order.
+            # Image source precedence is decided by collect_images, not matching.
+            prefix = [dict(item) for item in raw[:start]]
             command = {**raw[start], "data": "/做表情 " + shlex.quote(name) + tail}
             converted = [*prefix, command, *[dict(item) for item in raw[end:]]]
             return name, {**message, "raw_message": converted}

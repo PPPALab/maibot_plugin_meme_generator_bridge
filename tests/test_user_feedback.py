@@ -225,16 +225,16 @@ def test_keyword_preserves_real_media_order_and_never_guesses_nickname(prefix, s
     )
 
 
-def test_only_official_numeric_prefix_self_mention_is_filtered():
+def test_every_real_mention_is_preserved_regardless_of_bot_identity():
     target = {"type": "at", "data": {"target_user_id": "90000"}}
     index = KeywordIndex([HAMMER], [])
     raw = [target, {"type": "text", "data": "锤"}, target]
-    for account, count in [("90000", 1), ("opaque-adapter", 2), ("", 2)]:
+    for account in ["90000", "opaque-adapter", ""]:
         result = index.match({"raw_message": raw, "account_id": account})
-        assert sum(s["type"] == "at" for s in result[1]["raw_message"]) == count
+        assert sum(s["type"] == "at" for s in result[1]["raw_message"]) == 2
 
 
-async def test_prefix_bot_at_only_wakes_and_missing_input_is_still_consumed():
+async def test_bot_mention_plain_chat_passes_and_missing_input_is_still_consumed():
     p = await plugin(allowed_groups=[])
     p.config.keywords.enabled = True
     p._set_index([HAMMER])
@@ -245,10 +245,8 @@ async def test_prefix_bot_at_only_wakes_and_missing_input_is_still_consumed():
         for keyword in [False, True]:
             m = dispatch.message(
                 "",
-                media=[
-                    {"type": "at", "data": {"target_user_id": "90000"}},
-                    {"type": "text", "data": "锤" if keyword else "普通聊天"},
-                ],
+                media=([] if keyword else [{"type": "at", "data": {"target_user_id": "90000"}}])
+                + [{"type": "text", "data": "锤" if keyword else "普通聊天"}],
             )
             await dispatch.bot.receive_message(m)
             if not keyword:

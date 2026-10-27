@@ -855,10 +855,10 @@ async def test_real_sdk_open_session_response_is_not_unwrapped():
     }
     response = {"success": True, "created": True, "stream": {"session_id": "stream"}, "session_id": "stream", **route}
     rpc = AsyncMock(return_value=response)
-    context = PluginContext("local.meme-generator-bridge", rpc_call=rpc)
+    context = PluginContext("github.pppalab.meme-generator-bridge", rpc_call=rpc)
     assert await context.chat.open_session(**route) == response
     rpc.assert_awaited_once_with(
-        "cap.call", "local.meme-generator-bridge", {"capability": "chat.open_session", "args": route}
+        "cap.call", "github.pppalab.meme-generator-bridge", {"capability": "chat.open_session", "args": route}
     )
 
 

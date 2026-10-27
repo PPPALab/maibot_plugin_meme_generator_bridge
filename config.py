@@ -16,13 +16,16 @@ class Settings(PluginConfigBase):
     __ui_label__ = "服务、访问权限与资源限制"
     __ui_order__ = 0
 
-    config_version: str = Field(default="1.3.0", description="配置版本")
+    config_version: str = Field(default="1.4.0", description="配置版本")
     enabled: bool = Field(default=False, description="配置服务后启用；群白名单为空时允许全部群")
     base_url: str = Field(default="", description="自部署 Rust 服务地址，不含 API 路径")
     allowed_groups: List[str] = Field(
         default_factory=list, description="QQ 群白名单；空表示允许全部群，非空仅允许所列群；私聊独立控制"
     )
     allow_private: bool = Field(default=False, description="允许 QQ 私聊")
+    allow_quoted_images: bool = Field(
+        default=True, description="允许将引用消息中的图片作为输入；关闭后只读取当前消息附图"
+    )
     disabled_templates: List[str] = Field(default_factory=list, description="禁用模板 key 或精确关键词")
     timeout: float = Field(default=20, ge=1, le=120, description="单次网络请求超时秒数")
     operation_timeout: float = Field(default=45, ge=1, le=45, description="完整命令超时，需小于宿主 RPC 超时")

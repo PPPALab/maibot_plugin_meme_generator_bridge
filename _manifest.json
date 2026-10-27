@@ -1,12 +1,17 @@
 {
   "manifest_version": 2,
-  "id": "local.meme-generator-bridge",
+  "id": "github.pppalab.meme-generator-bridge",
   "version": "0.1.0",
   "name": "Meme Generator 桥接",
   "description": "通过确定性关键词和命令连接自部署 Rust meme-generator 服务",
   "author": {"name": "PPPALab", "url": "https://github.com/PPPALab"},
   "license": "MIT",
-  "urls": {"repository": "https://github.com/PPPALab/maibot_plugin_meme_generator_bridge"},
+  "urls": {
+    "repository": "https://github.com/PPPALab/maibot_plugin_meme_generator_bridge",
+    "documentation": "https://github.com/PPPALab/maibot_plugin_meme_generator_bridge/blob/main/README.md",
+    "issues": "https://github.com/PPPALab/maibot_plugin_meme_generator_bridge/issues"
+  },
+  "changelog": "CHANGELOG.md",
   "host_application": {"min_version": "1.3.15", "max_version": "1.3.15"},
   "sdk": {"min_version": "2.16.0", "max_version": "2.16.0"},
   "dependencies": [
@@ -14,6 +19,6 @@
     {"type": "python_package", "name": "httpcore", "version_spec": ">=1,<2"},
     {"type": "python_package", "name": "Pillow", "version_spec": ">=10,<13"}
   ],
-  "capabilities": ["send.text", "send.image", "send.emoji", "chat.get_avatar", "chat.open_session"],
+  "capabilities": ["send.text", "send.image", "send.emoji", "chat.get_avatar", "chat.open_session", "message.get_by_id"],
   "i18n": {"default_locale": "zh-CN", "locales_path": "_locales", "supported_locales": ["zh-CN"]}
 }

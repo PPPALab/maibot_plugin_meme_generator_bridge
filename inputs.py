@@ -55,13 +55,91 @@ def decode_image(encoded: Any, settings: Settings) -> bytes:
     return data
 
 
+def _reply_target(message: Dict[str, Any]) -> str:
+    """Quote target from a structured reply segment, falling back to reply_to."""
+    for item in segments(message):
+        if item.get("type") != "reply":
+            continue
+        data = item.get("data")
+        target = data.get("target_message_id") if isinstance(data, dict) else data
+        if isinstance(target, str) and target:
+            return target
+    reply_to = message.get("reply_to")
+    return reply_to if isinstance(reply_to, str) and reply_to else ""
+
+
+async def quoted_images(ctx: Any, client: Any, message: Dict[str, Any], stream_id: str, target: str) -> List[bytes]:
+    """Fetch one referenced message via the official SDK; never list history."""
+    settings = client.settings
+    try:
+        result = await asyncio.wait_for(
+            ctx.message.get_by_id(message_id=target, chat_id=stream_id, include_binary_data=True),
+            settings.timeout,
+        )
+    except asyncio.TimeoutError:
+        raise BridgeError("读取引用图片超时，请重新发送或直接附图。") from None
+    except BridgeError:
+        raise
+    except Exception:
+        raise BridgeError("引用的图片已不可用，请重新发送或直接附图。") from None
+    # SDK 2.16 unwraps message.get_by_id to the MessageDict (or None).
+    # Accept the raw Host envelope too, but never ignore an explicit failure.
+    fetched = None
+    if isinstance(result, dict):
+        if "success" in result:
+            if result["success"] is True:
+                fetched = result.get("message")
+        else:
+            fetched = result
+    if not isinstance(fetched, dict):
+        raise BridgeError("引用的图片已不可用，请重新发送或直接附图。")
+    if fetched.get("session_id") != stream_id:
+        raise BridgeError("引用的消息不在当前会话，已拒绝作为输入。")
+    encoded = []
+    for item in segments(fetched):
+        if item.get("type") not in {"image", "emoji"}:
+            continue
+        data = item.get("binary_data_base64")
+        if not isinstance(data, str) or not data:
+            raise BridgeError("引用的图片已不可用，请重新发送或直接附图。")
+        encoded.append(data)
+        if len(encoded) > settings.max_images:
+            raise BridgeError("引用图片数量超过限制，请减少或直接附图。")
+    total = 0
+    images = []
+    for data in encoded:
+        try:
+            decoded = decode_image(data, settings)
+        except BridgeError as exc:
+            raise BridgeError(f"引用的图片不可用：{exc}") from None
+        total += len(decoded)
+        if total > settings.max_total_input_bytes:
+            raise BridgeError("引用图片原始字节总量超过限制，请减少或直接附图。")
+        images.append(decoded)
+    return images
+
+
 async def collect_images(
-    ctx: Any, client: Any, message: Dict[str, Any], stream_id: str, avatars: Any = None
+    ctx: Any,
+    client: Any,
+    message: Dict[str, Any],
+    stream_id: str,
+    avatars: Any = None,
+    *,
+    max_images_needed: int | None = None,
 ) -> List[bytes]:
     raw = segments(message)
-    if any(x.get("type") in {"reply", "forward"} for x in raw) or message.get("reply_to"):
-        raise BridgeError("本版不支持引用图或转发图，请将图片附在当前命令消息中。")
+    if any(x.get("type") == "forward" for x in raw):
+        raise BridgeError("本版不支持转发图，请将图片附在当前命令消息或引用一条图片消息。")
     media = [x for x in raw if x.get("type") in {"image", "emoji", "at"}]
+    # Current attachments win. Otherwise a quote wins over every @, regardless
+    # of position or identity; no quote means all @ remain avatar inputs.
+    if not any(x.get("type") in {"image", "emoji"} for x in media):
+        target = _reply_target(message)
+        if target and client.settings.allow_quoted_images and max_images_needed != 0:
+            return await quoted_images(ctx, client, message, stream_id, target)
+    if not media:
+        return []
     if len(media) > client.settings.max_images:
         raise BridgeError("输入图片或 @ 数量超过限制。")
     images = []

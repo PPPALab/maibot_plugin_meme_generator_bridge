@@ -141,7 +141,7 @@ class Dispatch:
             self.invocations.append(kw)
             return await runner._handle_invoke(
                 Envelope(
-                    plugin_id="local.meme-generator-bridge",
+                    plugin_id="github.pppalab.meme-generator-bridge",
                     payload={"component_name": kw["component_name"], "args": kw["args"]},
                 )
             )
@@ -154,11 +154,13 @@ class Dispatch:
         )
         executor = executor_class._build_command_executor(
             SimpleNamespace(invoke_plugin=invoke_plugin),
-            "local.meme-generator-bridge",
+            "github.pppalab.meme-generator-bridge",
             "meme_bridge",
             metadata,
         )
-        info = SimpleNamespace(plugin_name="local.meme-generator-bridge", name="meme_bridge", permission="user")
+        info = SimpleNamespace(
+            plugin_name="github.pppalab.meme-generator-bridge", name="meme_bridge", permission="user"
+        )
 
         def find_command(text):
             result = registry.find_command_by_text(text)
@@ -191,7 +193,7 @@ class Dispatch:
             if name == "chat.receive.before_process":
                 response = await runner._handle_hook_invoke(
                     Envelope(
-                        plugin_id="local.meme-generator-bridge",
+                        plugin_id="github.pppalab.meme-generator-bridge",
                         payload={
                             "component_name": "meme_keyword_trigger",
                             "args": {"message": self.serialize(message)},

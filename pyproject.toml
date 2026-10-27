@@ -18,7 +18,7 @@ packages = ["maibot_plugin_meme_generator_bridge"]
 package-dir = {maibot_plugin_meme_generator_bridge = "."}
 
 [tool.setuptools.package-data]
-maibot_plugin_meme_generator_bridge = ["_manifest.json", "_locales/*.json", "README.md", "LICENSE", "requirements.txt", "deploy/compose.yaml", "deploy/.env.example"]
+maibot_plugin_meme_generator_bridge = ["_manifest.json", "_locales/*.json", "README.md", "CHANGELOG.md", "LICENSE", "requirements.txt", "deploy/compose.yaml", "deploy/.env.example"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

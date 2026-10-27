@@ -13,6 +13,17 @@ import os
 import pytest
 
 
+def test_release_identity_and_local_changelog():
+    root = Path(__file__).resolve().parents[1]
+    manifest = json.loads((root / "_manifest.json").read_text())
+    assert manifest["id"] == "github.pppalab.meme-generator-bridge"
+    assert manifest["version"] == "0.1.0"
+    assert manifest["urls"]["repository"] == "https://github.com/PPPALab/maibot_plugin_meme_generator_bridge"
+    assert manifest["changelog"] == "CHANGELOG.md"
+    assert (root / manifest["changelog"]).is_file()
+    assert "## 0.1.0" in (root / manifest["changelog"]).read_text()
+
+
 def test_reference_host_manifest_models():
     root = Path(__file__).resolve().parents[1]
     host = Path(os.environ.get("MAIBOT_REFERENCE", root.parent / "reference" / "MaiBot"))
@@ -33,4 +44,11 @@ def test_reference_host_manifest_models():
     namespace = {"__name__": "manifest_contract"}
     exec(compile(ast.fix_missing_locations(ast.Module(body=nodes, type_ignores=[])), str(source), "exec"), namespace)
     model = namespace["PluginManifest"].model_validate(json.loads((root / "_manifest.json").read_text()))
-    assert model.id == "local.meme-generator-bridge"
+    assert model.id == "github.pppalab.meme-generator-bridge"
+    assert model.version == "0.1.0"
+    assert model.changelog == "CHANGELOG.md"
+    assert (root / model.changelog).is_file()
+    assert model.urls.documentation == (
+        "https://github.com/PPPALab/maibot_plugin_meme_generator_bridge/blob/main/README.md"
+    )
+    assert model.urls.issues == "https://github.com/PPPALab/maibot_plugin_meme_generator_bridge/issues"
