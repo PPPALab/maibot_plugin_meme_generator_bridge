@@ -1,7 +1,8 @@
 {
   "manifest_version": 2,
   "id": "github.pppalab.meme-generator-bridge",
-  "version": "0.1.1",
+  "plugin_type": "media",
+  "version": "0.1.2",
   "name": "表情包制作桥接器",
   "description": "通过确定性关键词和命令连接自部署 Rust meme-generator 服务",
   "author": {"name": "PPPALab", "url": "https://github.com/PPPALab"},
@@ -20,5 +21,5 @@
     {"type": "python_package", "name": "Pillow", "version_spec": ">=10,<13"}
   ],
   "capabilities": ["send.text", "send.image", "send.emoji", "chat.get_avatar", "chat.open_session", "message.get_by_id"],
-  "i18n": {"default_locale": "zh-CN", "locales_path": "_locales", "supported_locales": ["zh-CN"]}
+  "i18n": {"default_locale": "zh-CN", "supported_locales": ["zh-CN"]}
 }

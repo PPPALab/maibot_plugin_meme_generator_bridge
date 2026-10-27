@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "maibot-plugin-meme-generator-bridge"
-version = "0.1.1"
+version = "0.1.2"
 description = "MaiBot SDK bridge to a self-hosted Rust meme generator"
 requires-python = ">=3.10"
 license = "MIT"
@@ -18,7 +18,7 @@ packages = ["maibot_plugin_meme_generator_bridge"]
 package-dir = {maibot_plugin_meme_generator_bridge = "."}
 
 [tool.setuptools.package-data]
-maibot_plugin_meme_generator_bridge = ["_manifest.json", "_locales/*.json", "README.md", "CHANGELOG.md", "LICENSE", "requirements.txt", "deploy/compose.yaml", "deploy/.env.example"]
+maibot_plugin_meme_generator_bridge = ["_manifest.json", "README.md", "CHANGELOG.md", "LICENSE", "requirements.txt", "deploy/compose.yaml", "deploy/.env.example"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

@@ -1,5 +1,11 @@
 # 更新日志
 
+## 0.1.2
+
+- 增加 `plugin_type: "media"`，符合插件中心的媒体类插件分类。
+- 移除未使用的空 `_locales` 语言目录；保留 manifest 必需的 `i18n.default_locale` 与 `supported_locales`。
+- README 说明关键词命中消息会在 `chat.receive.before_process` 中止，因此不进入宿主聊天记录、不经过宿主禁用词过滤；可用 `keywords.enabled` / `exclusions` 调整。
+
 ## 0.1.1
 
 - 插件显示名称统一为“表情包制作桥接器”。

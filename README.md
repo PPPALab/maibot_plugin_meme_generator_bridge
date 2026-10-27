@@ -91,6 +91,7 @@ MEME_PORT=2233
 
 ## 限制
 
+- 关键词命中后，消息会在 `chat.receive.before_process` 被中止，因此不会进入宿主聊天记录，也不会经过宿主禁用词过滤。这是确定性命中机制的取舍；可用 `keywords.enabled` 关闭关键词触发，或用 `keywords.exclusions` 排除特定词。
 - 不支持合并转发节点内的图片、用户提供的图片 URL 和模板高级 `options` 自定义。
 - @ 头像依赖适配器提供的官方头像接口，取不到时请直接附图。
 - 上游 0.2.3 不支持 `server.body_limit` / `server.max_concurrent_tasks` 这两个可配置项，不能据此推断没有其他默认限制。
