@@ -16,7 +16,7 @@ import time
 import httpcore
 
 from .client import BridgeError, image_kind
-from .config import AvatarSettings
+from .config import AvatarSettings, format_bytes
 
 
 def avatar_url(url: str, target: str) -> str:
@@ -144,11 +144,11 @@ class AvatarDownloader:
                     raise BridgeError("头像服务返回压缩传输，已拒绝。")
                 length = headers.get(b"content-length", b"")
                 if length and (not length.isdigit() or int(length) > self.max_bytes):
-                    raise BridgeError("头像大小超过输入限制。")
+                    raise BridgeError(f"头像大小超过输入限制（上限 {format_bytes(self.max_bytes)}）。")
                 result = bytearray()
                 async for chunk in response.aiter_stream():
                     if len(result) + len(chunk) > self.max_bytes:
-                        raise BridgeError("头像大小超过输入限制。")
+                        raise BridgeError(f"头像大小超过输入限制（上限 {format_bytes(self.max_bytes)}）。")
                     result.extend(chunk)
             data = bytes(result)
             image_kind(data)

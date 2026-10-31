@@ -12,7 +12,7 @@
 
 ## 前置条件
 
-- MaiBot **1.3.15** 与 `maibot-plugin-sdk` **2.16.0**
+- MaiBot **1.3.19** 与 `maibot-plugin-sdk` **2.20.0**（本次明确验证的版本组合；旧版请使用对应历史发布）
 - 可用的 QQ 适配器插件
 - 一个可访问的自部署 `meme-generator-rs` 服务
 
@@ -55,7 +55,7 @@ MEME_PORT=2233
 - 限额：`timeout`、`operation_timeout`、`concurrency`、`max_waiters`、`cooldown`
 - 菜单与头像：`menu.image_enabled`、`menu.text_fallback`、`avatar.enabled` 及缓存
 
-其余输入/输出大小、图片数量和文字长度等限额也在设置页。
+其余输入/输出大小、图片数量和文字长度等限额也在设置页；大小按十进制 MB / KB（1 MB=1,000,000 字节，1 KB=1,000 字节）填写，索引图按万像素填写，均支持小数。旧配置会自动换算，实际限额不变。
 
 ## 使用
 
@@ -92,6 +92,7 @@ MEME_PORT=2233
 ## 限制
 
 - 关键词命中后，消息会在 `chat.receive.before_process` 被中止，因此不会进入宿主聊天记录，也不会经过宿主禁用词过滤。这是确定性命中机制的取舍；可用 `keywords.enabled` 关闭关键词触发，或用 `keywords.exclusions` 排除特定词。
+- 宿主的前置媒体处理、其他插件和已排队的聊天任务仍可能运行；本插件不承诺整条聊天链路零模型调用。
 - 不支持合并转发节点内的图片、用户提供的图片 URL 和模板高级 `options` 自定义。
 - @ 头像依赖适配器提供的官方头像接口，取不到时请直接附图。
 - 上游 0.2.3 不支持 `server.body_limit` / `server.max_concurrent_tasks` 这两个可配置项，不能据此推断没有其他默认限制。

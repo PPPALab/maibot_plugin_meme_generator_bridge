@@ -5,6 +5,8 @@ test, not a running MaiBot integration. Sources are read-only and never vendored
 """
 
 from datetime import datetime
+from contextvars import ContextVar
+from importlib.metadata import version
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Callable, Dict, Optional, Tuple
@@ -22,7 +24,8 @@ import pytest
 
 def host_root():
     root = Path(__file__).resolve().parents[1]
-    host = Path(os.environ.get("MAIBOT_REFERENCE", root.parent / "reference" / "MaiBot"))
+    default = "MaiBot-v1.3.19" if version("maibot-plugin-sdk") == "2.20.0" else "MaiBot"
+    host = Path(os.environ.get("MAIBOT_REFERENCE", root.parent / "reference" / default))
     if not (host / "src/chat/message_receive/bot.py").is_file():
         pytest.skip("MAIBOT_REFERENCE required for actual host method contract tests")
     return host
@@ -36,6 +39,21 @@ def methods(source, class_name, names, namespace):
     ]
     assert {node.name for node in selected} == set(names)
     cls = ast.ClassDef(name=class_name, bases=[], keywords=[], body=selected, decorator_list=[])
+
+    # 1.3.19 imports file-service IO inside receive_message. Keep its ingest call
+    # and exact ordering, substituting only that service boundary (never start Host).
+    class FileServiceImport(ast.NodeTransformer):
+        def visit_ImportFrom(self, node):
+            if node.module == "src.files.service" and [(n.name, n.asname) for n in node.names] == [
+                ("get_file_service", None)
+            ]:
+                return ast.Assign(
+                    targets=[ast.Name(id="get_file_service", ctx=ast.Store())],
+                    value=ast.Name(id="_contract_get_file_service", ctx=ast.Load()),
+                )
+            return node
+
+    cls = FileServiceImport().visit(cls)
     exec(
         compile(ast.fix_missing_locations(ast.Module(body=[cls], type_ignores=[])), "<host-contract>", "exec"),
         namespace,
@@ -103,7 +121,11 @@ class Dispatch:
             "ComponentTypes": SimpleNamespace(COMMAND="COMMAND"),
             "CommandEntry": CommandEntry,
             "ComponentEntry": Any,
+            "is_plugin_relayed": lambda config: bool(config.get("relayed_by_plugin")),
+            "_file_scope": ContextVar("contract_file_scope", default=""),
         }
+        self.file_service = SimpleNamespace(ingest=AsyncMock())
+        namespace["_contract_get_file_service"] = lambda: self.file_service
         registry_class = methods(
             (host / "src/plugin_runtime/host/component_registry.py").read_text(),
             "ComponentRegistry",

@@ -387,11 +387,14 @@ def test_new_ui_limits_roundtrip_and_validation():
     fields = p.get_webui_config_schema()["sections"]["plugin"]["fields"]
     for name in (
         "recovery_epoch",
-        "max_total_input_bytes",
-        "max_request_bytes",
-        "max_operation_request_bytes",
+        "max_input_mb",
+        "max_total_input_mb",
+        "max_request_mb",
+        "max_operation_request_mb",
+        "max_output_mb",
+        "max_metadata_mb",
         "max_total_text_chars",
-        "max_total_text_bytes",
+        "max_total_text_kb",
         "cache_cleanup_interval",
     ):
         assert fields[name]["label"] and not fields[name]["hidden"]

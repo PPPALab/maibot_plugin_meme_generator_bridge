@@ -12,7 +12,7 @@ import re
 import time
 
 from .client import BridgeError, HeavyGate, MemeClient
-from .config import BridgeConfig
+from .config import BridgeConfig, LEGACY_LIMIT_DEFAULTS
 from .inputs import collect_images, command_text, parse_command, segments
 from .keywords import KeywordIndex
 from .media import AvatarDownloader
@@ -42,6 +42,15 @@ CONSUMED = 1
 
 class MemeBridgePlugin(MaiBotPlugin):
     config_model = BridgeConfig
+
+    @classmethod
+    def build_default_config(cls) -> Dict[str, Any]:
+        # Keep legacy byte keys in the migration skeleton so Host version upgrades
+        # can carry old values into the pre-validators; saved config drops them.
+        config = super().build_default_config()
+        for section, values in LEGACY_LIMIT_DEFAULTS.items():
+            config.setdefault(section, {}).update(values)
+        return config
 
     def __init__(self) -> None:
         super().__init__()

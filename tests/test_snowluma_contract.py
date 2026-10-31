@@ -5,6 +5,7 @@ No remote modules, repositories or source files are installed or cloned.
 """
 
 from collections.abc import Mapping
+from importlib.metadata import version
 from types import SimpleNamespace
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.request import urlopen
@@ -12,6 +13,7 @@ from unittest.mock import AsyncMock
 
 from maibot_sdk import Command
 from maibot_sdk.capabilities.chat import ChatCapability
+from maibot_sdk.capabilities.message import MessageCapability
 from maibot_sdk.capabilities.send import SendCapability
 
 import ast
@@ -205,11 +207,15 @@ async def test_snowluma_avatar_is_url_only_no_external_download(adapter_sources)
 
 
 def test_installed_sdk_matches_pinned_current_contract(adapter_sources):
-    sdk_sha = "835e0e9d1f70ea00885fb49d059f7f2864976d05"
+    sdk_sha = {
+        "2.16.0": "835e0e9d1f70ea00885fb49d059f7f2864976d05",
+        "2.20.0": "694aea499bbcbbc10ec6e1dae7b623e153636597",
+    }[version("maibot-plugin-sdk")]
     checks = {
         "components.py": [Command],
         "capabilities/send.py": [SendCapability.text, SendCapability.image, SendCapability.emoji],
-        "capabilities/chat.py": [ChatCapability.get_avatar],
+        "capabilities/chat.py": [ChatCapability.get_avatar, ChatCapability.open_session],
+        "capabilities/message.py": [MessageCapability.get_by_id],
     }
     for path, handlers in checks.items():
         url = f"https://raw.githubusercontent.com/Mai-with-u/maibot-plugin-sdk/{sdk_sha}/maibot_sdk/{path}"

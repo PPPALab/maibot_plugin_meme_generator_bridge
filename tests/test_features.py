@@ -834,7 +834,9 @@ def test_sdk_open_session_and_manifest_contract():
     root = Path(__file__).resolve().parents[1]
     manifest = json.loads((root / "_manifest.json").read_text())
     assert "chat.open_session" in manifest["capabilities"]
-    host = root.parent / "reference" / "MaiBot"
+    from host_dispatch import host_root
+
+    host = host_root()
     if not host.is_dir():
         pytest.skip("optional read-only Host reference unavailable")
     data = (host / "src/plugin_runtime/capabilities/data.py").read_text()

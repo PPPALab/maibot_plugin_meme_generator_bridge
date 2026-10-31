@@ -10,7 +10,7 @@ import re
 import shlex
 
 from .client import BridgeError, image_kind
-from .config import Settings
+from .config import Settings, format_bytes
 
 
 def segments(message: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -44,13 +44,13 @@ def decode_image(encoded: Any, settings: Settings) -> bytes:
     if not isinstance(encoded, str) or not encoded:
         raise BridgeError("当前图片无可用 SDK 二进制数据；不下载消息中的 URL，请重新附图。")
     if len(encoded) > 4 * ((settings.max_input_bytes + 2) // 3):
-        raise BridgeError("输入图片超过大小限制。")
+        raise BridgeError(f"输入图片超过大小限制（单图上限 {format_bytes(settings.max_input_bytes)}）。")
     try:
         data = base64.b64decode(encoded, validate=True)
     except (ValueError, binascii.Error):
         raise BridgeError("SDK 图片 Base64 无效。") from None
     if len(data) > settings.max_input_bytes:
-        raise BridgeError("输入图片超过大小限制。")
+        raise BridgeError(f"输入图片超过大小限制（单图上限 {format_bytes(settings.max_input_bytes)}）。")
     image_kind(data)
     return data
 
@@ -114,7 +114,10 @@ async def quoted_images(ctx: Any, client: Any, message: Dict[str, Any], stream_i
             raise BridgeError(f"引用的图片不可用：{exc}") from None
         total += len(decoded)
         if total > settings.max_total_input_bytes:
-            raise BridgeError("引用图片原始字节总量超过限制，请减少或直接附图。")
+            raise BridgeError(
+                f"引用图片原始字节总量超过限制（全部输入上限 {format_bytes(settings.max_total_input_bytes)}），"
+                "请减少或直接附图。"
+            )
         images.append(decoded)
     return images
 
@@ -187,5 +190,7 @@ async def collect_images(
                 images.append(data)
                 seen.add(identity)
         if sum(map(len, images)) > client.settings.max_total_input_bytes:
-            raise BridgeError("输入图片原始字节总量超过限制。")
+            raise BridgeError(
+                f"输入图片原始字节总量超过限制（全部输入上限 {format_bytes(client.settings.max_total_input_bytes)}）。"
+            )
     return images

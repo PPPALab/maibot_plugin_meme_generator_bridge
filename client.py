@@ -12,7 +12,7 @@ import time
 
 import httpx
 
-from .config import Settings
+from .config import Settings, format_bytes
 
 
 class BridgeError(Exception):
@@ -106,7 +106,10 @@ class MemeClient:
     def bounded_body(self, payload: Any) -> bytes:
         body = json_body(payload)
         if len(body) > self.settings.max_request_bytes:
-            raise BridgeError("单次 HTTP JSON 请求体超过大小限制（含 UTF-8/Base64/JSON 封装）。")
+            raise BridgeError(
+                "单次 HTTP JSON 请求体超过大小限制"
+                f"（单次请求上限 {format_bytes(self.settings.max_request_bytes)}；含 UTF-8/Base64/JSON 封装）。"
+            )
         return body
 
     async def _read(
@@ -130,11 +133,11 @@ class MemeClient:
             bound = limit if response.is_success else min(limit, 16_384)
             length = response.headers.get("content-length", "")
             if length.isdigit() and int(length) > bound:
-                raise BridgeError("服务响应超过大小限制。")
+                raise BridgeError(f"服务响应超过大小限制（上限 {format_bytes(bound)}）。")
             body = bytearray()
             async for chunk in response.aiter_bytes(chunk_size=16_384):
                 if len(body) + len(chunk) > bound:
-                    raise BridgeError("服务响应超过大小限制。")
+                    raise BridgeError(f"服务响应超过大小限制（上限 {format_bytes(bound)}）。")
                 body.extend(chunk)
             parsed = None
             if completion is not None or not response.is_success:
@@ -244,11 +247,13 @@ class MemeClient:
                     f"{label}数量要求 {params[f'min_{name}']}–{params[f'max_{name}']}，实际 {len(values)}。"
                 )
         if len(images) > self.settings.max_images or any(len(x) > self.settings.max_input_bytes for x in images):
-            raise BridgeError("输入图片数量或大小超过限制。")
+            raise BridgeError(f"输入图片数量或大小超过限制（单图上限 {format_bytes(self.settings.max_input_bytes)}）。")
         if any(len(x) > self.settings.max_text_chars for x in texts):
             raise BridgeError("输入文字超过长度限制。")
         if sum(map(len, images)) > self.settings.max_total_input_bytes:
-            raise BridgeError("输入图片原始字节总量超过限制。")
+            raise BridgeError(
+                f"输入图片原始字节总量超过限制（全部输入上限 {format_bytes(self.settings.max_total_input_bytes)}）。"
+            )
         if sum(map(len, texts)) > self.settings.max_total_text_chars:
             raise BridgeError("输入文字总字符数超过限制。")
         try:
@@ -256,7 +261,9 @@ class MemeClient:
         except UnicodeError:
             raise BridgeError("文字含无效 Unicode 数据。") from None
         if text_bytes > self.settings.max_total_text_bytes:
-            raise BridgeError("输入文字 UTF-8 总字节数超过限制。")
+            raise BridgeError(
+                f"输入文字 UTF-8 总字节数超过限制（文字总量上限 {format_bytes(self.settings.max_total_text_bytes)}）。"
+            )
         # Preflight *every* upload and the final request before upload #1.
         # Uploads are separate HTTP requests, not one combined image payload.
         final = {
@@ -267,9 +274,15 @@ class MemeClient:
         final_size = len(self.bounded_body(final))
         upload_sizes = [len(json_body({"type": "data", "data": ""})) + 4 * ((len(image) + 2) // 3) for image in images]
         if any(size > self.settings.max_request_bytes for size in upload_sizes):
-            raise BridgeError("图片 Base64 与 JSON 封装后的单次上传请求超过大小限制。")
+            raise BridgeError(
+                "图片 Base64 与 JSON 封装后的单次上传请求超过大小限制"
+                f"（单次请求上限 {format_bytes(self.settings.max_request_bytes)}）。"
+            )
         if sum(upload_sizes) + final_size > self.settings.max_operation_request_bytes:
-            raise BridgeError("逐图上传及生成 JSON 请求体累计超过大小限制。")
+            raise BridgeError(
+                "逐图上传及生成 JSON 请求体累计超过大小限制"
+                f"（整次累计上限 {format_bytes(self.settings.max_operation_request_bytes)}）。"
+            )
         for image in images:
             image_kind(image)
         if self.gate.blocked:

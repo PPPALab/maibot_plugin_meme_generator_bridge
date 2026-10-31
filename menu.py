@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional
 from PIL import Image, ImageDraw, ImageFont
 
 from .client import BridgeError
+from .config import format_bytes, format_pixels
 
 
 MAX_ITEMS = 10_000
@@ -71,7 +72,7 @@ def render_index(
             break
         cols += 1
     if width * height > max_pixels:
-        raise BridgeError("索引图超过像素限制，请提高菜单像素限额。")
+        raise BridgeError(f"索引图超过像素限制（上限 {format_pixels(max_pixels)}），请提高菜单像素限额。")
     candidate = font_path or next((p for p in FONT_PATHS if Path(p).is_file()), "")
     if not candidate:
         raise BridgeError("索引图缺少本地中日韩字体，请安装 Noto Sans CJK 或 Unifont。")
@@ -119,5 +120,5 @@ def render_index(
     image.save(output, format="PNG")
     data = output.getvalue()
     if len(data) > max_bytes:
-        raise BridgeError("索引图超过输出字节限制。")
+        raise BridgeError(f"索引图超过输出字节限制（上限 {format_bytes(max_bytes)}）。")
     return data
