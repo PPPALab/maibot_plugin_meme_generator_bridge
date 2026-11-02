@@ -2,6 +2,8 @@
 
 把自部署的 Rust 表情引擎 [meme-generator-rs](https://github.com/MemeCrafters/meme-generator-rs) 接入 MaiBot。用中文关键词或斜杠命令直接生成表情，不依赖 LLM 判断意图。
 
+可参考上游[表情列表](https://github.com/MemeCrafters/meme-generator-rs/wiki/表情列表)查看具体可生成表情，实际可用模板以所部署的引擎版本和 `/表情帮助` 为准。
+
 ## 特性
 
 - 关键词直接触发，支持真实 @、当前附图、同一会话引用图和多段文字
