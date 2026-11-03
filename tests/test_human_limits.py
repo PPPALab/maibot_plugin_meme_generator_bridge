@@ -41,7 +41,7 @@ def test_host_upgrade_preserves_legacy_limits_and_rejects_invalid_types():
     }
     result = runner._normalize_plugin_config(plugin, raw, suppress_errors=False)
     assert result.should_persist
-    assert result.normalized_config["plugin"]["config_version"] == "1.5.0"
+    assert result.normalized_config["plugin"]["config_version"] == "1.6.0"
     cfg = BridgeConfig.model_validate(result.normalized_config)
     assert cfg.plugin.max_input_bytes == 1024
     assert cfg.menu.max_pixels == 10001
@@ -317,7 +317,7 @@ def test_default_config_keeps_legacy_skeleton_for_host_upgrade():
 
     plugin.set_plugin_config(defaults)
     saved = plugin.get_plugin_config_data()
-    assert saved["plugin"]["config_version"] == "1.5.0"
+    assert saved["plugin"]["config_version"] == "1.6.0"
     assert "max_input_bytes" not in saved["plugin"]
     assert "max_pixels" not in saved["menu"]
     assert "cache_bytes" not in saved["avatar"]
@@ -508,7 +508,7 @@ async def test_unit_limits_survive_actual_plugin_hot_update():
         assert p.avatars.settings.cache_bytes == 1234567
         assert p.config.plugin.allowed_groups == ["12345"]
         saved = p.get_plugin_config_data()
-        assert saved["plugin"]["config_version"] == "1.5.0"
+        assert saved["plugin"]["config_version"] == "1.6.0"
         assert "max_input_bytes" not in saved["plugin"]
         p.set_plugin_config(saved)
         assert p.config.plugin.max_input_bytes == 500000

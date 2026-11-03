@@ -2,8 +2,7 @@
 
 from collections.abc import Mapping
 from decimal import Decimal, InvalidOperation
-from typing import Any, List, NamedTuple
-
+from typing import Any, Dict, List, NamedTuple, Tuple
 from urllib.parse import urlsplit
 
 from maibot_sdk import Field as SDKField, PluginConfigBase
@@ -153,7 +152,7 @@ def _is_default(value: Any, default: float) -> bool:
         return False
 
 
-def _migrate_legacy_limits(data: Any, specs: tuple[_LimitSpec, ...]) -> Any:
+def _migrate_legacy_limits(data: Any, specs: Tuple[_LimitSpec, ...]) -> Any:
     """Migrate old byte/pixel fields before validation; new non-default value wins."""
     if not isinstance(data, Mapping):
         return data
@@ -171,7 +170,7 @@ def _migrate_legacy_limits(data: Any, specs: tuple[_LimitSpec, ...]) -> Any:
     return migrated
 
 
-def _legacy_defaults(specs: tuple[_LimitSpec, ...]) -> dict[str, Any]:
+def _legacy_defaults(specs: Tuple[_LimitSpec, ...]) -> Dict[str, Any]:
     # Host's type-filtered rebuild preserves every value when the skeleton is None.
     # This lets our validator reject malformed old values rather than silently reset.
     return {spec.old_key: None for spec in specs}
@@ -188,7 +187,7 @@ class Settings(PluginConfigBase):
     __ui_label__ = "服务、访问权限与资源限制"
     __ui_order__ = 0
 
-    config_version: str = Field(default="1.5.0", description="配置版本")
+    config_version: str = Field(default="1.6.0", description="配置版本")
     enabled: bool = Field(default=False, description="配置服务后启用；群白名单为空时允许全部群")
     base_url: str = Field(default="", description="自部署 Rust 服务地址，不含 API 路径")
     allowed_groups: List[str] = Field(
@@ -278,10 +277,10 @@ class Settings(PluginConfigBase):
     def _migrate_legacy_limits(cls, data: Any) -> Any:
         migrated = _migrate_legacy_limits(data, _SETTINGS_LIMITS)
         if isinstance(migrated, dict):
-            version = str(migrated.get("config_version", "1.5.0")).split(".")
+            version = str(migrated.get("config_version", "1.6.0")).split(".")
             if len(version) == 3 and all(part.isdigit() for part in version):
-                if tuple(map(int, version)) < (1, 5, 0):
-                    migrated["config_version"] = "1.5.0"
+                if tuple(map(int, version)) < (1, 6, 0):
+                    migrated["config_version"] = "1.6.0"
         return migrated
 
     @field_validator("max_input_mb", mode="before")
@@ -411,8 +410,8 @@ class MenuSettings(PluginConfigBase):
     __ui_label__ = "帮助与表情菜单"
     __ui_order__ = 1
 
-    image_enabled: bool = Field(default=True, description="帮助/列表发送一张全量关键词索引图")
-    text_fallback: bool = Field(default=True, description="索引图失败时发送一条文字版关键词清单")
+    image_enabled: bool = Field(default=True, description="帮助/列表发送随包预绘菜单；需与当前可用模板一致")
+    text_fallback: bool = Field(default=True, description="模板不同或索引图不可用时发送一条文字版关键词清单")
     max_pixels_wan: float = Field(
         default=400.0,
         ge=1.0,
@@ -491,8 +490,28 @@ class AvatarSettings(PluginConfigBase):
         self.cache_mb = _bytes_to_unit(value, _CACHE_MB.scale)
 
 
+class ManagedSettings(PluginConfigBase):
+    __ui_label__ = "⚠ 可选托管第三方引擎（默认关闭）"
+    __ui_order__ = 4
+
+    enabled: bool = Field(
+        default=False,
+        label="⚠ 下载并执行第三方引擎",
+        description=(
+            "开启并保存即在后台下载、校验并执行固定 v0.2.3 引擎，另下载约 381 MB 上游素材归档（解包后约 414 MB）。"
+            "至少预留 1.2 GB 磁盘。引擎与 MaiBot 共用所在环境的 CPU、内存，没有单独的资源配额；"
+            "以同一用户运行，Docker 部署时位于同一容器，并非安全沙箱。"
+            "第三方素材/字体许可未获完整确认，不代表均为 MIT。按官方包匹配 Linux glibc、Windows、macOS、Android；"
+            "Linux x86_64 已验证，其余平台为实验性支持，欢迎反馈。"
+            "不自动安装系统依赖。安装期间不可制作；关闭后恢复原外部地址并保留下载数据。"
+        ),
+    )
+    port: int = Field(default=22331, ge=1024, le=65535, description="仅监听 127.0.0.1；占用时报错，不终止其他进程")
+
+
 class BridgeConfig(PluginConfigBase):
     plugin: Settings = Field(default_factory=Settings)
     menu: MenuSettings = Field(default_factory=MenuSettings)
     keywords: KeywordSettings = Field(default_factory=KeywordSettings)
     avatar: AvatarSettings = Field(default_factory=AvatarSettings)
+    managed: ManagedSettings = Field(default_factory=ManagedSettings)

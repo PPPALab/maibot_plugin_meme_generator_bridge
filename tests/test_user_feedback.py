@@ -1,7 +1,7 @@
 """User-visible keyword index/help, structured keyword admission and access semantics."""
 
-from unittest.mock import AsyncMock
 from io import BytesIO
+from unittest.mock import AsyncMock
 
 import base64
 import copy
@@ -16,7 +16,7 @@ from test_features import HAMMER, finish_jobs, item
 
 from maibot_plugin_meme_generator_bridge.client import BridgeError
 from maibot_plugin_meme_generator_bridge.keywords import KeywordIndex
-from maibot_plugin_meme_generator_bridge.menu import render_index
+from maibot_plugin_meme_generator_bridge.tools.build_menu import render_index
 
 
 def many_items(count):
@@ -50,15 +50,16 @@ async def test_leading_real_at_is_consumed_by_official_host_contract():
         await p.on_unload()
 
 
-async def test_help_without_arguments_sends_one_index_image_for_300_templates():
+async def test_help_without_arguments_sends_one_index_image_for_300_templates(bundled_items):
     p = await plugin()
     p.config.menu.image_enabled = True
-    p.client.metadata = AsyncMock(return_value=many_items(300))
+    p.client.metadata = AsyncMock(return_value=bundled_items)
     try:
         assert await p.handle_command(**args("/表情帮助")) == (True, None, 1)
         p.ctx.send.image.assert_awaited_once()
         p.ctx.send.text.assert_not_awaited()
         raw = p.ctx.send.image.await_args.args[0]
+        assert len(bundled_items) == 300 and base64.b64decode(raw) == p._menu.data
         with Image.open(BytesIO(base64.b64decode(raw))) as image:
             assert image.format == "PNG" and image.width == 1120
             assert image.width * image.height <= p.config.menu.max_pixels
@@ -101,13 +102,7 @@ def test_index_rejects_empty_oversized_or_unrenderable_inputs():
             render_index(items, len(items), pixels, size, font_path=font)
 
 
-async def test_index_failure_sends_one_truncated_text_fallback(monkeypatch):
-    from maibot_plugin_meme_generator_bridge import plugin as plugin_module
-
-    def fail(*a, **kw):
-        raise BridgeError("绘制失败")
-
-    monkeypatch.setattr(plugin_module, "render_index", fail)
+async def test_index_mismatch_sends_one_truncated_text_fallback():
     p = await plugin()
     p.config.menu.image_enabled = True
     p.client.metadata = AsyncMock(return_value=[item(f"k{i:03}", "超长关键词" * 200 + str(i)) for i in range(300)])
@@ -116,24 +111,21 @@ async def test_index_failure_sends_one_truncated_text_fallback(monkeypatch):
         p.ctx.send.image.assert_not_awaited()
         p.ctx.send.text.assert_awaited_once()
         text = p.ctx.send.text.await_args.args[0]
-        assert "……" in text and len(text) <= 1600 and "共 300 个" in text and "绘制失败" in text
+        assert "……" in text and len(text) <= 1600 and "共 300 个" in text and "随包菜单不同" in text
     finally:
         await p.on_unload()
 
 
-async def test_index_send_false_keeps_single_attempt_and_reports(monkeypatch):
-    from maibot_plugin_meme_generator_bridge import plugin as plugin_module
-
-    monkeypatch.setattr(plugin_module, "render_index", lambda *a: PNG)
+async def test_index_send_false_keeps_single_attempt_and_reports(bundled_items):
     p = await plugin()
     p.config.menu.image_enabled = True
-    p.client.metadata = AsyncMock(return_value=many_items(300))
+    p.client.metadata = AsyncMock(return_value=bundled_items)
     p.ctx.send.image.return_value = False
     try:
         assert await p.handle_command(**args("/表情帮助")) == (True, None, 1)
-        assert p.ctx.send.image.await_count == 1  # drawn once, never retried
+        assert p.ctx.send.image.await_count == 1  # one send attempt, never retried
         reply = p.ctx.send.text.await_args.args[0]
-        assert "未确认发送" in reply and "词0" in reply
+        assert "未确认发送" in reply and "共 300 个" in reply
     finally:
         await p.on_unload()
 
@@ -321,7 +313,7 @@ async def test_empty_group_list_allows_help_but_private_stays_closed():
 
 
 def test_index_prefers_shortest_keyword_the_font_can_draw(monkeypatch):
-    module = importlib.import_module("maibot_plugin_meme_generator_bridge.menu")
+    module = importlib.import_module("maibot_plugin_meme_generator_bridge.tools.build_menu")
     monkeypatch.setattr(module, "_char_renderable", lambda path, size, char: char not in {"🤺", "🐔"})
     labels = []
     original = ImageDraw.ImageDraw.text
@@ -340,7 +332,7 @@ def test_index_prefers_shortest_keyword_the_font_can_draw(monkeypatch):
 
 
 def test_index_falls_back_to_template_key_when_no_keyword_renders(monkeypatch):
-    module = importlib.import_module("maibot_plugin_meme_generator_bridge.menu")
+    module = importlib.import_module("maibot_plugin_meme_generator_bridge.tools.build_menu")
     monkeypatch.setattr(module, "_char_renderable", lambda path, size, char: char != "🤺")
     labels = []
     original = ImageDraw.ImageDraw.text
@@ -356,7 +348,7 @@ def test_index_falls_back_to_template_key_when_no_keyword_renders(monkeypatch):
 
 
 def test_index_selection_keeps_shortest_intent_for_normal_keywords(monkeypatch):
-    module = importlib.import_module("maibot_plugin_meme_generator_bridge.menu")
+    module = importlib.import_module("maibot_plugin_meme_generator_bridge.tools.build_menu")
     monkeypatch.setattr(module, "_char_renderable", lambda path, size, char: True)
     item_a = {**copy.deepcopy(ITEM), "key": "fencing", "keywords": ["击剑术", "击剑"]}
     item_b = {**copy.deepcopy(ITEM), "key": "ascii", "keywords": ["longer", "abc"]}
@@ -373,7 +365,7 @@ def test_index_selection_keeps_shortest_intent_for_normal_keywords(monkeypatch):
 
 
 def test_real_font_reports_missing_emoji_glyph_but_keeps_ascii():
-    module = importlib.import_module("maibot_plugin_meme_generator_bridge.menu")
+    module = importlib.import_module("maibot_plugin_meme_generator_bridge.tools.build_menu")
     path = module.FONT_PATHS[0]  # DejaVu in this test process
     assert module._char_renderable(path, 20, "A") is True
     assert module._char_renderable(path, 20, "🤺") is False

@@ -1,0 +1,1885 @@
+{
+  "schema_version": 1,
+  "engine_version": "0.2.3",
+  "sha256": "e52bc0d764fe43453b4298f3cf2f7e993659ca5b420d9a991fc767566f4d9c8e",
+  "width": 1120,
+  "height": 1858,
+  "templates": [
+    {
+      "key": "5000choyen",
+      "keywords": [
+        "5000兆"
+      ]
+    },
+    {
+      "key": "abstinence",
+      "keywords": [
+        "戒导"
+      ]
+    },
+    {
+      "key": "ace_attorney_dialog",
+      "keywords": [
+        "逆转裁判气泡"
+      ]
+    },
+    {
+      "key": "acg_entrance",
+      "keywords": [
+        "二次元入口"
+      ]
+    },
+    {
+      "key": "add_chaos",
+      "keywords": [
+        "添乱",
+        "给社会添乱"
+      ]
+    },
+    {
+      "key": "addiction",
+      "keywords": [
+        "上瘾",
+        "毒瘾发作"
+      ]
+    },
+    {
+      "key": "alike",
+      "keywords": [
+        "一样"
+      ]
+    },
+    {
+      "key": "alipay",
+      "keywords": [
+        "支付宝支付"
+      ]
+    },
+    {
+      "key": "always",
+      "keywords": [
+        "一直"
+      ]
+    },
+    {
+      "key": "always_like",
+      "keywords": [
+        "我永远喜欢"
+      ]
+    },
+    {
+      "key": "anan_say",
+      "keywords": [
+        "安安说"
+      ]
+    },
+    {
+      "key": "anti_kidnap",
+      "keywords": [
+        "防诱拐"
+      ]
+    },
+    {
+      "key": "anya_suki",
+      "keywords": [
+        "阿尼亚喜欢"
+      ]
+    },
+    {
+      "key": "applaud",
+      "keywords": [
+        "鼓掌"
+      ]
+    },
+    {
+      "key": "arona_throw",
+      "keywords": [
+        "阿罗娜扔"
+      ]
+    },
+    {
+      "key": "ascension",
+      "keywords": [
+        "升天"
+      ]
+    },
+    {
+      "key": "ask",
+      "keywords": [
+        "问问"
+      ]
+    },
+    {
+      "key": "atri_pillow",
+      "keywords": [
+        "亚托莉枕头"
+      ]
+    },
+    {
+      "key": "ayachi_holdsign",
+      "keywords": [
+        "宁宁举牌"
+      ]
+    },
+    {
+      "key": "ba_say",
+      "keywords": [
+        "ba说"
+      ]
+    },
+    {
+      "key": "back_to_work",
+      "keywords": [
+        "继续干活",
+        "打工人"
+      ]
+    },
+    {
+      "key": "backflip",
+      "keywords": [
+        "后空翻"
+      ]
+    },
+    {
+      "key": "bad_news",
+      "keywords": [
+        "悲报"
+      ]
+    },
+    {
+      "key": "batitle",
+      "keywords": [
+        "蔚蓝档案标题",
+        "batitle"
+      ]
+    },
+    {
+      "key": "beat_head",
+      "keywords": [
+        "拍头"
+      ]
+    },
+    {
+      "key": "beat_up",
+      "keywords": [
+        "揍"
+      ]
+    },
+    {
+      "key": "blamed_mahiro",
+      "keywords": [
+        "真寻挨骂"
+      ]
+    },
+    {
+      "key": "blood_pressure",
+      "keywords": [
+        "高血压"
+      ]
+    },
+    {
+      "key": "bocchi_draft",
+      "keywords": [
+        "波奇手稿"
+      ]
+    },
+    {
+      "key": "bronya_holdsign",
+      "keywords": [
+        "布洛妮娅举牌",
+        "大鸭鸭举牌"
+      ]
+    },
+    {
+      "key": "bubble_tea",
+      "keywords": [
+        "奶茶"
+      ]
+    },
+    {
+      "key": "call_110",
+      "keywords": [
+        "遇到困难请拨打"
+      ]
+    },
+    {
+      "key": "capoo_draw",
+      "keywords": [
+        "咖波画"
+      ]
+    },
+    {
+      "key": "capoo_point",
+      "keywords": [
+        "咖波指"
+      ]
+    },
+    {
+      "key": "capoo_rip",
+      "keywords": [
+        "咖波撕"
+      ]
+    },
+    {
+      "key": "capoo_rub",
+      "keywords": [
+        "咖波蹭",
+        "咖波贴"
+      ]
+    },
+    {
+      "key": "capoo_say",
+      "keywords": [
+        "咖波说"
+      ]
+    },
+    {
+      "key": "capoo_stew",
+      "keywords": [
+        "咖波炖"
+      ]
+    },
+    {
+      "key": "capoo_strike",
+      "keywords": [
+        "咖波撞",
+        "咖波头槌"
+      ]
+    },
+    {
+      "key": "captain",
+      "keywords": [
+        "舰长"
+      ]
+    },
+    {
+      "key": "caused_by_this",
+      "keywords": [
+        "这个引起的"
+      ]
+    },
+    {
+      "key": "certificate",
+      "keywords": [
+        "奖状",
+        "证书"
+      ]
+    },
+    {
+      "key": "chanshenzi",
+      "keywords": [
+        "馋身子"
+      ]
+    },
+    {
+      "key": "charpic",
+      "keywords": [
+        "字符画"
+      ]
+    },
+    {
+      "key": "chase_train",
+      "keywords": [
+        "追列车",
+        "追火车"
+      ]
+    },
+    {
+      "key": "china_flag",
+      "keywords": [
+        "国旗"
+      ]
+    },
+    {
+      "key": "chino_throw",
+      "keywords": [
+        "智乃扔",
+        "智乃抛"
+      ]
+    },
+    {
+      "key": "clauvio_twist",
+      "keywords": [
+        "鼠鼠搓"
+      ]
+    },
+    {
+      "key": "clown",
+      "keywords": [
+        "小丑"
+      ]
+    },
+    {
+      "key": "clown_mask",
+      "keywords": [
+        "小丑面具"
+      ]
+    },
+    {
+      "key": "confuse",
+      "keywords": [
+        "迷惑"
+      ]
+    },
+    {
+      "key": "coupon",
+      "keywords": [
+        "兑换券"
+      ]
+    },
+    {
+      "key": "cover_face",
+      "keywords": [
+        "捂脸"
+      ]
+    },
+    {
+      "key": "crawl",
+      "keywords": [
+        "爬"
+      ]
+    },
+    {
+      "key": "cyan",
+      "keywords": [
+        "群青"
+      ]
+    },
+    {
+      "key": "daynight",
+      "keywords": [
+        "白天黑夜",
+        "白天晚上"
+      ]
+    },
+    {
+      "key": "decent_kiss",
+      "keywords": [
+        "像样的亲亲"
+      ]
+    },
+    {
+      "key": "dianzhongdian",
+      "keywords": [
+        "入典",
+        "典中典",
+        "黑白草图"
+      ]
+    },
+    {
+      "key": "dinosaur",
+      "keywords": [
+        "恐龙",
+        "小恐龙"
+      ]
+    },
+    {
+      "key": "distracted",
+      "keywords": [
+        "注意力涣散"
+      ]
+    },
+    {
+      "key": "divorce",
+      "keywords": [
+        "离婚协议",
+        "离婚申请"
+      ]
+    },
+    {
+      "key": "dog_dislike",
+      "keywords": [
+        "狗都不玩"
+      ]
+    },
+    {
+      "key": "dog_of_vtb",
+      "keywords": [
+        "管人痴"
+      ]
+    },
+    {
+      "key": "dont_go_near",
+      "keywords": [
+        "不要靠近"
+      ]
+    },
+    {
+      "key": "dont_press",
+      "keywords": [
+        "不要按"
+      ]
+    },
+    {
+      "key": "dont_touch",
+      "keywords": [
+        "别碰"
+      ]
+    },
+    {
+      "key": "doraemon_say",
+      "keywords": [
+        "哆啦A梦说"
+      ]
+    },
+    {
+      "key": "douyin",
+      "keywords": [
+        "douyin"
+      ]
+    },
+    {
+      "key": "eat",
+      "keywords": [
+        "吃"
+      ]
+    },
+    {
+      "key": "elysia_holdsign",
+      "keywords": [
+        "爱莉举牌"
+      ]
+    },
+    {
+      "key": "emperor_dragon",
+      "keywords": [
+        "皇帝龙图"
+      ]
+    },
+    {
+      "key": "erised_mirror",
+      "keywords": [
+        "意若思镜"
+      ]
+    },
+    {
+      "key": "fade_away",
+      "keywords": [
+        "灰飞烟灭"
+      ]
+    },
+    {
+      "key": "fanatic",
+      "keywords": [
+        "狂爱",
+        "狂粉"
+      ]
+    },
+    {
+      "key": "father_work",
+      "keywords": [
+        "我爸爸"
+      ]
+    },
+    {
+      "key": "fencing",
+      "keywords": [
+        "击剑",
+        "🤺"
+      ]
+    },
+    {
+      "key": "fight_with_sunuo",
+      "keywords": [
+        "我打宿傩",
+        "我打宿傩吗"
+      ]
+    },
+    {
+      "key": "fill_head",
+      "keywords": [
+        "满脑子"
+      ]
+    },
+    {
+      "key": "find_chips",
+      "keywords": [
+        "整点薯条"
+      ]
+    },
+    {
+      "key": "firefly_holdsign",
+      "keywords": [
+        "流萤举牌"
+      ]
+    },
+    {
+      "key": "flash_blind",
+      "keywords": [
+        "闪瞎"
+      ]
+    },
+    {
+      "key": "flick",
+      "keywords": [
+        "弹",
+        "脑瓜崩"
+      ]
+    },
+    {
+      "key": "flush",
+      "keywords": [
+        "红温"
+      ]
+    },
+    {
+      "key": "fogging",
+      "keywords": [
+        "回南天",
+        "水雾"
+      ]
+    },
+    {
+      "key": "follow",
+      "keywords": [
+        "关注"
+      ]
+    },
+    {
+      "key": "forbid",
+      "keywords": [
+        "禁止",
+        "禁"
+      ]
+    },
+    {
+      "key": "frieren_take",
+      "keywords": [
+        "芙莉莲拿"
+      ]
+    },
+    {
+      "key": "funny_mirror",
+      "keywords": [
+        "哈哈镜"
+      ]
+    },
+    {
+      "key": "garbage",
+      "keywords": [
+        "垃圾",
+        "垃圾桶"
+      ]
+    },
+    {
+      "key": "genshin_eat",
+      "keywords": [
+        "原神吃"
+      ]
+    },
+    {
+      "key": "genshin_start",
+      "keywords": [
+        "原神启动"
+      ]
+    },
+    {
+      "key": "good_news",
+      "keywords": [
+        "喜报"
+      ]
+    },
+    {
+      "key": "google",
+      "keywords": [
+        "google"
+      ]
+    },
+    {
+      "key": "google_captcha",
+      "keywords": [
+        "谷歌验证码"
+      ]
+    },
+    {
+      "key": "gorilla_throw",
+      "keywords": [
+        "猩猩扔"
+      ]
+    },
+    {
+      "key": "grab",
+      "keywords": [
+        "抓"
+      ]
+    },
+    {
+      "key": "grab_both_hands",
+      "keywords": [
+        "双手抓"
+      ]
+    },
+    {
+      "key": "guichu",
+      "keywords": [
+        "鬼畜"
+      ]
+    },
+    {
+      "key": "gun",
+      "keywords": [
+        "手枪"
+      ]
+    },
+    {
+      "key": "hammer",
+      "keywords": [
+        "锤"
+      ]
+    },
+    {
+      "key": "haruhi_raise",
+      "keywords": [
+        "凉宫春日举"
+      ]
+    },
+    {
+      "key": "head_butt",
+      "keywords": [
+        "顶"
+      ]
+    },
+    {
+      "key": "high_eq",
+      "keywords": [
+        "高低情商",
+        "低高情商"
+      ]
+    },
+    {
+      "key": "hit_screen",
+      "keywords": [
+        "打穿",
+        "打穿屏幕"
+      ]
+    },
+    {
+      "key": "hold_grudge",
+      "keywords": [
+        "记仇"
+      ]
+    },
+    {
+      "key": "hold_tight",
+      "keywords": [
+        "抱紧"
+      ]
+    },
+    {
+      "key": "hug",
+      "keywords": [
+        "抱",
+        "抱抱"
+      ]
+    },
+    {
+      "key": "hug_leg",
+      "keywords": [
+        "抱大腿"
+      ]
+    },
+    {
+      "key": "hutao_bite",
+      "keywords": [
+        "胡桃啃"
+      ]
+    },
+    {
+      "key": "imprison",
+      "keywords": [
+        "坐牢"
+      ]
+    },
+    {
+      "key": "incivilization",
+      "keywords": [
+        "不文明"
+      ]
+    },
+    {
+      "key": "intel_inside",
+      "keywords": [
+        "inside"
+      ]
+    },
+    {
+      "key": "interview",
+      "keywords": [
+        "采访"
+      ]
+    },
+    {
+      "key": "jerry_stare",
+      "keywords": [
+        "杰瑞盯"
+      ]
+    },
+    {
+      "key": "jiamianqishi",
+      "keywords": [
+        "假面骑士"
+      ]
+    },
+    {
+      "key": "jiji_king",
+      "keywords": [
+        "急急国王"
+      ]
+    },
+    {
+      "key": "jinhsi",
+      "keywords": [
+        "汐汐",
+        "今汐"
+      ]
+    },
+    {
+      "key": "jiubingfufa",
+      "keywords": [
+        "旧病复发"
+      ]
+    },
+    {
+      "key": "jiujiu",
+      "keywords": [
+        "啾啾"
+      ]
+    },
+    {
+      "key": "jump",
+      "keywords": [
+        "跳"
+      ]
+    },
+    {
+      "key": "kaleidoscope",
+      "keywords": [
+        "万花筒",
+        "万花镜"
+      ]
+    },
+    {
+      "key": "karyl_point",
+      "keywords": [
+        "凯露指"
+      ]
+    },
+    {
+      "key": "keep_away",
+      "keywords": [
+        "远离"
+      ]
+    },
+    {
+      "key": "keep_your_money",
+      "keywords": [
+        "压岁钱不要交给"
+      ]
+    },
+    {
+      "key": "kick_ball",
+      "keywords": [
+        "踢球"
+      ]
+    },
+    {
+      "key": "kirby_hammer",
+      "keywords": [
+        "卡比锤",
+        "卡比重锤"
+      ]
+    },
+    {
+      "key": "kiss",
+      "keywords": [
+        "亲",
+        "亲亲"
+      ]
+    },
+    {
+      "key": "klee_eat",
+      "keywords": [
+        "可莉吃"
+      ]
+    },
+    {
+      "key": "knock",
+      "keywords": [
+        "敲"
+      ]
+    },
+    {
+      "key": "kokona_seal",
+      "keywords": [
+        "心奈印章"
+      ]
+    },
+    {
+      "key": "konata_watch",
+      "keywords": [
+        "泉此方看"
+      ]
+    },
+    {
+      "key": "learn",
+      "keywords": [
+        "偷学"
+      ]
+    },
+    {
+      "key": "left_right_jump",
+      "keywords": [
+        "左右横跳"
+      ]
+    },
+    {
+      "key": "let_me_in",
+      "keywords": [
+        "让我进去"
+      ]
+    },
+    {
+      "key": "lick_candy",
+      "keywords": [
+        "舔糖",
+        "舔棒棒糖"
+      ]
+    },
+    {
+      "key": "lim_x_0",
+      "keywords": [
+        "等价无穷小"
+      ]
+    },
+    {
+      "key": "listen_music",
+      "keywords": [
+        "听音乐"
+      ]
+    },
+    {
+      "key": "little_angel",
+      "keywords": [
+        "小天使"
+      ]
+    },
+    {
+      "key": "loading",
+      "keywords": [
+        "加载中"
+      ]
+    },
+    {
+      "key": "look_flat",
+      "keywords": [
+        "看扁"
+      ]
+    },
+    {
+      "key": "look_this_icon",
+      "keywords": [
+        "看图标"
+      ]
+    },
+    {
+      "key": "loop",
+      "keywords": [
+        "循环"
+      ]
+    },
+    {
+      "key": "lost_dog",
+      "keywords": [
+        "寻狗启事"
+      ]
+    },
+    {
+      "key": "love_you",
+      "keywords": [
+        "永远爱你"
+      ]
+    },
+    {
+      "key": "luotianyi_need",
+      "keywords": [
+        "洛天依要",
+        "天依要"
+      ]
+    },
+    {
+      "key": "luotianyi_say",
+      "keywords": [
+        "洛天依说",
+        "天依说"
+      ]
+    },
+    {
+      "key": "luoyonghao_say",
+      "keywords": [
+        "罗永浩说"
+      ]
+    },
+    {
+      "key": "luxun_say",
+      "keywords": [
+        "鲁迅说",
+        "鲁迅说过"
+      ]
+    },
+    {
+      "key": "mahiro_readbook",
+      "keywords": [
+        "真寻看书"
+      ]
+    },
+    {
+      "key": "maikease",
+      "keywords": [
+        "麦克阿瑟说"
+      ]
+    },
+    {
+      "key": "maimai_awaken",
+      "keywords": [
+        "旅行伙伴觉醒"
+      ]
+    },
+    {
+      "key": "maimai_join",
+      "keywords": [
+        "旅行伙伴加入"
+      ]
+    },
+    {
+      "key": "make_friend",
+      "keywords": [
+        "交个朋友"
+      ]
+    },
+    {
+      "key": "marriage",
+      "keywords": [
+        "结婚申请",
+        "结婚登记"
+      ]
+    },
+    {
+      "key": "meteor",
+      "keywords": [
+        "流星"
+      ]
+    },
+    {
+      "key": "mihoyo",
+      "keywords": [
+        "米哈游"
+      ]
+    },
+    {
+      "key": "mourning",
+      "keywords": [
+        "上香"
+      ]
+    },
+    {
+      "key": "murmur",
+      "keywords": [
+        "低语"
+      ]
+    },
+    {
+      "key": "my_friend_say",
+      "keywords": [
+        "我朋友说"
+      ]
+    },
+    {
+      "key": "my_opinion",
+      "keywords": [
+        "我的意见如下",
+        "我的意见是"
+      ]
+    },
+    {
+      "key": "my_wife",
+      "keywords": [
+        "我老婆",
+        "这是我老婆"
+      ]
+    },
+    {
+      "key": "nahida_bite",
+      "keywords": [
+        "纳西妲啃",
+        "草神啃"
+      ]
+    },
+    {
+      "key": "name_generator",
+      "keywords": [
+        "亚文化取名机",
+        "亚名"
+      ]
+    },
+    {
+      "key": "need",
+      "keywords": [
+        "需要",
+        "你可能需要"
+      ]
+    },
+    {
+      "key": "nekoha_holdsign",
+      "keywords": [
+        "猫羽雫举牌",
+        "猫猫举牌"
+      ]
+    },
+    {
+      "key": "nihaosaoa",
+      "keywords": [
+        "你好骚啊"
+      ]
+    },
+    {
+      "key": "nijika_holdsign",
+      "keywords": [
+        "虹夏举牌"
+      ]
+    },
+    {
+      "key": "no_response",
+      "keywords": [
+        "无响应"
+      ]
+    },
+    {
+      "key": "nokia",
+      "keywords": [
+        "诺基亚",
+        "有内鬼"
+      ]
+    },
+    {
+      "key": "note_for_leave",
+      "keywords": [
+        "请假条"
+      ]
+    },
+    {
+      "key": "operator_generator",
+      "keywords": [
+        "合成大干员"
+      ]
+    },
+    {
+      "key": "oshi_no_ko",
+      "keywords": [
+        "我推的网友"
+      ]
+    },
+    {
+      "key": "osu",
+      "keywords": [
+        "osu"
+      ]
+    },
+    {
+      "key": "out",
+      "keywords": [
+        "out"
+      ]
+    },
+    {
+      "key": "overtime",
+      "keywords": [
+        "加班"
+      ]
+    },
+    {
+      "key": "p5letter",
+      "keywords": [
+        "p5预告信"
+      ]
+    },
+    {
+      "key": "paint",
+      "keywords": [
+        "这像画吗"
+      ]
+    },
+    {
+      "key": "painter",
+      "keywords": [
+        "小画家"
+      ]
+    },
+    {
+      "key": "panda_dragon_figure",
+      "keywords": [
+        "熊猫龙图"
+      ]
+    },
+    {
+      "key": "pass_the_buck",
+      "keywords": [
+        "推锅",
+        "甩锅"
+      ]
+    },
+    {
+      "key": "pat",
+      "keywords": [
+        "拍"
+      ]
+    },
+    {
+      "key": "pepe_raise",
+      "keywords": [
+        "佩佩举"
+      ]
+    },
+    {
+      "key": "perfect",
+      "keywords": [
+        "完美"
+      ]
+    },
+    {
+      "key": "petpet",
+      "keywords": [
+        "摸",
+        "摸摸",
+        "摸头",
+        "rua"
+      ]
+    },
+    {
+      "key": "pinch",
+      "keywords": [
+        "捏",
+        "捏脸"
+      ]
+    },
+    {
+      "key": "pixelate",
+      "keywords": [
+        "像素化"
+      ]
+    },
+    {
+      "key": "pjsk",
+      "keywords": [
+        "pjsk",
+        "世界计划"
+      ]
+    },
+    {
+      "key": "plana_eat",
+      "keywords": [
+        "普拉娜吃",
+        "普拉娜舔"
+      ]
+    },
+    {
+      "key": "play_baseball",
+      "keywords": [
+        "打棒球"
+      ]
+    },
+    {
+      "key": "play_basketball",
+      "keywords": [
+        "打篮球",
+        "火柴人打篮球"
+      ]
+    },
+    {
+      "key": "play_game",
+      "keywords": [
+        "玩游戏"
+      ]
+    },
+    {
+      "key": "play_together",
+      "keywords": [
+        "一起玩"
+      ]
+    },
+    {
+      "key": "police",
+      "keywords": [
+        "出警"
+      ]
+    },
+    {
+      "key": "policeman",
+      "keywords": [
+        "警察"
+      ]
+    },
+    {
+      "key": "pornhub",
+      "keywords": [
+        "ph",
+        "pornhub"
+      ]
+    },
+    {
+      "key": "potato",
+      "keywords": [
+        "土豆"
+      ]
+    },
+    {
+      "key": "pound",
+      "keywords": [
+        "捣"
+      ]
+    },
+    {
+      "key": "praise",
+      "keywords": [
+        "表扬"
+      ]
+    },
+    {
+      "key": "printing",
+      "keywords": [
+        "打印"
+      ]
+    },
+    {
+      "key": "prpr",
+      "keywords": [
+        "舔",
+        "舔屏",
+        "prpr"
+      ]
+    },
+    {
+      "key": "psyduck",
+      "keywords": [
+        "可达鸭"
+      ]
+    },
+    {
+      "key": "punch",
+      "keywords": [
+        "打拳"
+      ]
+    },
+    {
+      "key": "pyramid",
+      "keywords": [
+        "四棱锥",
+        "金字塔"
+      ]
+    },
+    {
+      "key": "qiegewala",
+      "keywords": [
+        "切格瓦拉"
+      ]
+    },
+    {
+      "key": "raise_image",
+      "keywords": [
+        "举"
+      ]
+    },
+    {
+      "key": "raise_sign",
+      "keywords": [
+        "举牌"
+      ]
+    },
+    {
+      "key": "read_book",
+      "keywords": [
+        "看书"
+      ]
+    },
+    {
+      "key": "remote_control",
+      "keywords": [
+        "遥控",
+        "控制"
+      ]
+    },
+    {
+      "key": "repeat",
+      "keywords": [
+        "复读"
+      ]
+    },
+    {
+      "key": "rip",
+      "keywords": [
+        "撕"
+      ]
+    },
+    {
+      "key": "rip_angrily",
+      "keywords": [
+        "怒撕"
+      ]
+    },
+    {
+      "key": "rip_clothes",
+      "keywords": [
+        "撕衣服"
+      ]
+    },
+    {
+      "key": "rise_dead",
+      "keywords": [
+        "诈尸",
+        "秽土转生"
+      ]
+    },
+    {
+      "key": "roll",
+      "keywords": [
+        "滚"
+      ]
+    },
+    {
+      "key": "rotate_3d",
+      "keywords": [
+        "三维旋转"
+      ]
+    },
+    {
+      "key": "rub",
+      "keywords": [
+        "贴",
+        "贴贴",
+        "蹭",
+        "蹭蹭"
+      ]
+    },
+    {
+      "key": "run",
+      "keywords": [
+        "快跑"
+      ]
+    },
+    {
+      "key": "run_away",
+      "keywords": [
+        "快逃"
+      ]
+    },
+    {
+      "key": "safe_sense",
+      "keywords": [
+        "安全感"
+      ]
+    },
+    {
+      "key": "saimin_app",
+      "keywords": [
+        "催眠app"
+      ]
+    },
+    {
+      "key": "scratch_head",
+      "keywords": [
+        "挠头"
+      ]
+    },
+    {
+      "key": "scratchcard",
+      "keywords": [
+        "刮刮乐"
+      ]
+    },
+    {
+      "key": "scroll",
+      "keywords": [
+        "滚屏"
+      ]
+    },
+    {
+      "key": "seal",
+      "keywords": [
+        "源石封印"
+      ]
+    },
+    {
+      "key": "sekaiichi_kawaii",
+      "keywords": [
+        "世界第一可爱"
+      ]
+    },
+    {
+      "key": "shake_head",
+      "keywords": [
+        "晃脑"
+      ]
+    },
+    {
+      "key": "shiroko_pero",
+      "keywords": [
+        "白子舔"
+      ]
+    },
+    {
+      "key": "shishilani",
+      "keywords": [
+        "食屎啦你"
+      ]
+    },
+    {
+      "key": "shock",
+      "keywords": [
+        "震惊"
+      ]
+    },
+    {
+      "key": "shuifandui",
+      "keywords": [
+        "谁反对"
+      ]
+    },
+    {
+      "key": "shutup",
+      "keywords": [
+        "别说了"
+      ]
+    },
+    {
+      "key": "sit_still",
+      "keywords": [
+        "坐得住"
+      ]
+    },
+    {
+      "key": "slap",
+      "keywords": [
+        "一巴掌"
+      ]
+    },
+    {
+      "key": "slogan",
+      "keywords": [
+        "口号"
+      ]
+    },
+    {
+      "key": "smash",
+      "keywords": [
+        "砸"
+      ]
+    },
+    {
+      "key": "sold_out",
+      "keywords": [
+        "卖掉了"
+      ]
+    },
+    {
+      "key": "speechless",
+      "keywords": [
+        "无语"
+      ]
+    },
+    {
+      "key": "sphere_rotate",
+      "keywords": [
+        "球面旋转"
+      ]
+    },
+    {
+      "key": "spider",
+      "keywords": [
+        "蜘蛛",
+        "蜘蛛爬"
+      ]
+    },
+    {
+      "key": "stare_at_you",
+      "keywords": [
+        "盯着你"
+      ]
+    },
+    {
+      "key": "steam_message",
+      "keywords": [
+        "steam消息"
+      ]
+    },
+    {
+      "key": "step_on",
+      "keywords": [
+        "踩"
+      ]
+    },
+    {
+      "key": "stew",
+      "keywords": [
+        "炖"
+      ]
+    },
+    {
+      "key": "stickman_dancing",
+      "keywords": [
+        "跳舞",
+        "火柴人跳舞"
+      ]
+    },
+    {
+      "key": "subject3",
+      "keywords": [
+        "科目三"
+      ]
+    },
+    {
+      "key": "suck",
+      "keywords": [
+        "吸",
+        "嗦"
+      ]
+    },
+    {
+      "key": "support",
+      "keywords": [
+        "精神支柱"
+      ]
+    },
+    {
+      "key": "swirl_turn",
+      "keywords": [
+        "回旋转",
+        "旋风转"
+      ]
+    },
+    {
+      "key": "symmetric",
+      "keywords": [
+        "对称"
+      ]
+    },
+    {
+      "key": "tankuku_raisesign",
+      "keywords": [
+        "唐可可举牌"
+      ]
+    },
+    {
+      "key": "taunt",
+      "keywords": [
+        "嘲讽"
+      ]
+    },
+    {
+      "key": "teach",
+      "keywords": [
+        "讲课",
+        "敲黑板"
+      ]
+    },
+    {
+      "key": "tease",
+      "keywords": [
+        "拿捏",
+        "戏弄"
+      ]
+    },
+    {
+      "key": "telescope",
+      "keywords": [
+        "望远镜"
+      ]
+    },
+    {
+      "key": "thermometer_gun",
+      "keywords": [
+        "体温枪"
+      ]
+    },
+    {
+      "key": "think_what",
+      "keywords": [
+        "想什么"
+      ]
+    },
+    {
+      "key": "this_chicken",
+      "keywords": [
+        "这是鸡",
+        "🐔"
+      ]
+    },
+    {
+      "key": "throw",
+      "keywords": [
+        "丢",
+        "扔"
+      ]
+    },
+    {
+      "key": "throw_gif",
+      "keywords": [
+        "抛",
+        "掷"
+      ]
+    },
+    {
+      "key": "thump",
+      "keywords": [
+        "捶"
+      ]
+    },
+    {
+      "key": "thump_wildly",
+      "keywords": [
+        "捶爆",
+        "爆捶"
+      ]
+    },
+    {
+      "key": "tightly",
+      "keywords": [
+        "紧贴",
+        "紧紧贴着"
+      ]
+    },
+    {
+      "key": "time_to_go",
+      "keywords": [
+        "该走了"
+      ]
+    },
+    {
+      "key": "together",
+      "keywords": [
+        "一起"
+      ]
+    },
+    {
+      "key": "tom_tease",
+      "keywords": [
+        "汤姆嘲笑"
+      ]
+    },
+    {
+      "key": "tomb_yeah",
+      "keywords": [
+        "上坟",
+        "坟前比耶"
+      ]
+    },
+    {
+      "key": "trance",
+      "keywords": [
+        "恍惚"
+      ]
+    },
+    {
+      "key": "trolley",
+      "keywords": [
+        "推车"
+      ]
+    },
+    {
+      "key": "turn",
+      "keywords": [
+        "转"
+      ]
+    },
+    {
+      "key": "twist",
+      "keywords": [
+        "搓"
+      ]
+    },
+    {
+      "key": "universal",
+      "keywords": [
+        "万能表情",
+        "空白表情"
+      ]
+    },
+    {
+      "key": "upside_down",
+      "keywords": [
+        "反了"
+      ]
+    },
+    {
+      "key": "vibrate",
+      "keywords": [
+        "震动"
+      ]
+    },
+    {
+      "key": "wakeup",
+      "keywords": [
+        "好起来了"
+      ]
+    },
+    {
+      "key": "wallpaper",
+      "keywords": [
+        "墙纸"
+      ]
+    },
+    {
+      "key": "walnut_pad",
+      "keywords": [
+        "胡桃平板"
+      ]
+    },
+    {
+      "key": "walnut_zoom",
+      "keywords": [
+        "胡桃放大"
+      ]
+    },
+    {
+      "key": "wangjingze",
+      "keywords": [
+        "王境泽"
+      ]
+    },
+    {
+      "key": "washer",
+      "keywords": [
+        "洗衣机"
+      ]
+    },
+    {
+      "key": "wave",
+      "keywords": [
+        "波纹"
+      ]
+    },
+    {
+      "key": "wechat_pay",
+      "keywords": [
+        "微信支付"
+      ]
+    },
+    {
+      "key": "weisuoyuwei",
+      "keywords": [
+        "为所欲为"
+      ]
+    },
+    {
+      "key": "what_he_wants",
+      "keywords": [
+        "最想要的东西"
+      ]
+    },
+    {
+      "key": "what_i_want_to_do",
+      "keywords": [
+        "我想上的"
+      ]
+    },
+    {
+      "key": "why_at_me",
+      "keywords": [
+        "为什么@我"
+      ]
+    },
+    {
+      "key": "why_have_hands",
+      "keywords": [
+        "为什么要有手"
+      ]
+    },
+    {
+      "key": "windmill_turn",
+      "keywords": [
+        "风车转"
+      ]
+    },
+    {
+      "key": "wish_fail",
+      "keywords": [
+        "许愿失败"
+      ]
+    },
+    {
+      "key": "wooden_fish",
+      "keywords": [
+        "木鱼"
+      ]
+    },
+    {
+      "key": "worship",
+      "keywords": [
+        "膜",
+        "膜拜"
+      ]
+    },
+    {
+      "key": "wujing",
+      "keywords": [
+        "吴京中国"
+      ]
+    },
+    {
+      "key": "wunian",
+      "keywords": [
+        "五年怎么过的"
+      ]
+    },
+    {
+      "key": "wuyage",
+      "keywords": [
+        "乌鸦哥"
+      ]
+    },
+    {
+      "key": "yalidaye",
+      "keywords": [
+        "压力大爷"
+      ]
+    },
+    {
+      "key": "yeshu",
+      "keywords": [
+        "椰树椰汁"
+      ]
+    },
+    {
+      "key": "you_dont_get",
+      "keywords": [
+        "你不懂啦"
+      ]
+    },
+    {
+      "key": "you_should_call",
+      "keywords": [
+        "致电",
+        "你应该致电"
+      ]
+    },
+    {
+      "key": "your_new_years_eve",
+      "keywords": [
+        "你的跨年"
+      ]
+    },
+    {
+      "key": "youtube",
+      "keywords": [
+        "yt",
+        "youtube"
+      ]
+    },
+    {
+      "key": "zengxiaoxian",
+      "keywords": [
+        "曾小贤"
+      ]
+    }
+  ],
+  "font": "NotoSansSC-Regular.ttf",
+  "font_sha256": "ae82f4e2a55e1316a55bcc1d05e9555ce08d8bda07e893b486896b626fd852ff"
+}

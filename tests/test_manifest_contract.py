@@ -17,8 +17,8 @@ def test_release_identity_and_local_changelog():
     root = Path(__file__).resolve().parents[1]
     manifest = json.loads((root / "_manifest.json").read_text())
     assert manifest["id"] == "github.pppalab.meme-generator-bridge"
-    assert manifest["name"] == "表情包制作桥接器"
-    assert manifest["version"] == "0.1.3"
+    assert manifest["name"] == "表情包制作"
+    assert manifest["version"] == "0.2.0"
     assert tomli.loads((root / "pyproject.toml").read_text())["project"]["version"] == manifest["version"]
     assert manifest["plugin_type"] == "media"
     assert manifest["capabilities"] == [
@@ -36,7 +36,7 @@ def test_release_identity_and_local_changelog():
     assert manifest["urls"]["repository"] == "https://github.com/PPPALab/maibot_plugin_meme_generator_bridge"
     assert manifest["changelog"] == "CHANGELOG.md"
     assert (root / manifest["changelog"]).is_file()
-    assert "## 0.1.3" in (root / manifest["changelog"]).read_text()
+    assert "## 0.2.0" in (root / manifest["changelog"]).read_text()
 
 
 def test_reference_host_manifest_models():
@@ -62,7 +62,7 @@ def test_reference_host_manifest_models():
     exec(compile(ast.fix_missing_locations(ast.Module(body=nodes, type_ignores=[])), str(source), "exec"), namespace)
     model = namespace["PluginManifest"].model_validate(json.loads((root / "_manifest.json").read_text()))
     assert model.id == "github.pppalab.meme-generator-bridge"
-    assert model.version == "0.1.3"
+    assert model.version == "0.2.0"
     assert model.plugin_type == "media"
     assert model.i18n.locales_path is None
     assert model.changelog == "CHANGELOG.md"

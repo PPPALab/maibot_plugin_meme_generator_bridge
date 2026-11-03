@@ -23,6 +23,7 @@ from maibot_plugin_meme_generator_bridge.config import AvatarSettings
 from maibot_plugin_meme_generator_bridge.inputs import collect_images, command_text
 from maibot_plugin_meme_generator_bridge.keywords import KeywordIndex
 from maibot_plugin_meme_generator_bridge.media import AvatarDownloader, PublicBackend, avatar_url
+from maibot_plugin_meme_generator_bridge.menu import BundledIndex, template_set
 
 
 MENU = b"\x89PNG\r\n\x1a\n" + b"\x00\x00\x00\rIHDR" + struct.pack(">II", 400, 400)
@@ -237,45 +238,37 @@ async def test_keyword_admission_is_bounded_and_unload_cancels_waiting_jobs():
     assert not p._keyword_jobs and not p._tasks and p._keyword_bytes == 0
 
 
-async def test_menu_index_excludes_disabled_and_counts_remaining(monkeypatch):
-    calls = []
+async def test_menu_index_excludes_disabled_and_counts_remaining():
     items = [item("a", "第一项"), item("b", "第二项"), item("hide", "禁用项")]
-    from maibot_plugin_meme_generator_bridge import plugin as plugin_module
-
-    def draw(selected, total, pixels, max_bytes):
-        calls.append(([x["key"] for x in selected], total))
-        return MENU
-
-    monkeypatch.setattr(plugin_module, "render_index", draw)
     p = await plugin(disabled_templates=["hide"])
+    p._menu = BundledIndex(MENU, template_set(items), 400, 400)
     p.config.menu.image_enabled = True
     p.client.metadata = AsyncMock(return_value=items)
     try:
         await p.handle_command(**args("/表情帮助"))
-        assert calls == [(["a", "b"], 2)]
-        p.ctx.send.text.assert_not_awaited()
-        p.ctx.send.image.assert_awaited_once()
+        p.ctx.send.image.assert_not_awaited()
+        p.ctx.send.text.assert_awaited_once()
+        text = p.ctx.send.text.await_args.args[0]
+        assert "第一项、第二项" in text and "共 2 个" in text and "禁用项" not in text
         assert p._index.match(message("第一项")) is not None
     finally:
         await p.on_unload()
 
 
 @pytest.mark.parametrize("fallback", [True, False])
-async def test_menu_failure_visible_not_silent(fallback, monkeypatch):
+async def test_menu_failure_visible_not_silent(fallback):
     p = await plugin()
     p.config.menu.image_enabled = True
     p.config.menu.text_fallback = fallback
-    from maibot_plugin_meme_generator_bridge import plugin as plugin_module
-
-    def fail(*a):
-        raise BridgeError("菜单绘制失败")
-
-    monkeypatch.setattr(plugin_module, "render_index", fail)
+    p._menu = None
+    p._menu_error = "随包菜单文件缺失或损坏，请重新安装插件。"
     try:
         result = await p.handle_command(**args("/表情列表"))
         assert result[2] == 1
         text = p.ctx.send.text.await_args.args[0]
-        assert "菜单绘制失败" in text
+        assert "随包菜单文件缺失或损坏" in text
+        assert result[0] is fallback
+        p.ctx.send.image.assert_not_awaited()
         if fallback:
             assert "测试" in text and "文字清单" in text
     finally:
@@ -290,6 +283,7 @@ async def test_menu_empty_and_send_exception_answers_text_safely():
     assert "共 0 个" in p.ctx.send.text.await_args.args[0]
     p.ctx.send.text.reset_mock()
     p.client.metadata = AsyncMock(return_value=[item("a", "第一项")])
+    p._menu = BundledIndex(MENU, template_set([item("a", "第一项")]), 400, 400)
     p.ctx.send.image.side_effect = RuntimeError("private endpoint details")
     await p.handle_command(**args("/表情列表"))
     assert p.ctx.send.text.await_count == 1
@@ -303,7 +297,7 @@ def test_configuration_schema_chinese_groups_and_roundtrip():
 
     p = create_plugin()
     schema = p.get_webui_config_schema()["sections"]
-    assert set(schema) == {"plugin", "menu", "keywords", "avatar"}
+    assert set(schema) == {"plugin", "menu", "keywords", "avatar", "managed"}
     for section in schema.values():
         assert any("\u4e00" <= char <= "\u9fff" for char in section["title"])
         for field in section["fields"].values():
@@ -626,9 +620,13 @@ async def test_load_and_reload_register_only_one_snapshot_refresh_task(monkeypat
     p._set_context(ctx())
     await p.on_load()
     first_task = p._refresh_task
+    # Initial metadata now runs in the background so config RPCs never wait on
+    # a network timeout. The mock completes in this event-loop turn.
+    await asyncio.sleep(0)
     assert p._index.names == ("锤",) and calls == ["/meme/infos"]
     try:
         await p.on_config_update("self", data, "1.1.0")
+        await asyncio.sleep(0)
         assert first_task.cancelled() and p._refresh_task is not first_task
         assert not p._refresh_task.done() and calls == ["/meme/infos", "/meme/infos"]
         components = p.get_components()
@@ -661,12 +659,10 @@ async def test_keyword_adjacent_real_at_uses_only_sdk_avatar_source():
         await p.on_unload()
 
 
-async def test_menu_sdk_send_exception_keeps_text_and_safe_error(monkeypatch):
+async def test_menu_sdk_send_exception_keeps_text_and_safe_error():
     p = await plugin()
     p.config.menu.image_enabled = True
-    from maibot_plugin_meme_generator_bridge import plugin as plugin_module
-
-    monkeypatch.setattr(plugin_module, "render_index", lambda *a: MENU)
+    p._menu = BundledIndex(MENU, template_set([ITEM]), 400, 400)
     p.ctx.send.image.side_effect = RuntimeError("private endpoint details")
     try:
         result = await p.handle_command(**args("/表情帮助"))

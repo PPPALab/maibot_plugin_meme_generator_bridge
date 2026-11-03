@@ -1,8 +1,8 @@
 """Bounded, no-retry HTTP client for the inspected Rust server contract."""
 
-from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import quote
 from contextlib import contextmanager, nullcontext
+from typing import Any, Callable, Dict, List, Optional, Tuple
+from urllib.parse import quote
 
 import asyncio
 import base64
@@ -79,6 +79,7 @@ def image_kind(data: bytes) -> str:
 class MemeClient:
     def __init__(self, settings: Settings, transport: Optional[httpx.AsyncBaseTransport] = None):
         self.settings = settings
+        self.endpoint: Optional[Callable[[], Optional[str]]] = None
         self.gate = HeavyGate()
         self.http = httpx.AsyncClient(
             timeout=settings.timeout,
@@ -95,13 +96,16 @@ class MemeClient:
         await self.http.aclose()
 
     async def request(self, method: str, path: str, limit: int, payload: Any = None) -> bytes:
-        if not self.settings.base_url:
+        base_url = self.endpoint() if self.endpoint is not None else self.settings.base_url
+        if not base_url and self.endpoint is not None:
+            raise BridgeError("托管引擎尚未就绪，请查看设置页安装状态；未使用外部服务。")
+        if not base_url:
             raise BridgeError("尚未配置自部署服务 base_url。")
         body = self.bounded_body(payload) if payload is not None else None
         heavy = (
             method == "POST" and (path == "/tools/render_list" or re.fullmatch(r"/memes/[A-Za-z0-9_-]+", path))
         ) or (path.startswith("/memes/") and path.endswith("/preview"))
-        return await self._read(method, self.settings.base_url + path, limit, body, bool(heavy))
+        return await self._read(method, base_url + path, limit, body, bool(heavy))
 
     def bounded_body(self, payload: Any) -> bytes:
         body = json_body(payload)
@@ -123,7 +127,9 @@ class MemeClient:
         except httpx.HTTPError:
             raise BridgeError("无法连接服务或读取失败，请检查地址与服务状态；未自动重试。") from None
 
-    async def _read_response(self, method, url, limit, body, completion):
+    async def _read_response(
+        self, method: str, url: str, limit: int, body: Optional[bytes], completion: Optional[List[bool]]
+    ) -> bytes:
         async with self.http.stream(
             method, url, content=body, headers={"Accept-Encoding": "identity", "Content-Type": "application/json"}
         ) as response:

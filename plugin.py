@@ -1,9 +1,9 @@
 """Deterministic commands/keywords; no AI intent inference or Docker management."""
 
 from collections import OrderedDict
-from typing import Any, Dict, List, Set
+from typing import Any, Dict, List, Optional, Set, Tuple
 
-from maibot_sdk import Command, HookHandler, MaiBotPlugin
+from maibot_sdk import Command, ConfigWidget, ConfigWidgetState, HookHandler, MaiBotPlugin
 from maibot_sdk.types import HookMode
 
 import asyncio
@@ -13,10 +13,12 @@ import time
 
 from .client import BridgeError, HeavyGate, MemeClient
 from .config import BridgeConfig, LEGACY_LIMIT_DEFAULTS
+from .engine import EngineManager
+from .engine_install import disk
 from .inputs import collect_images, command_text, parse_command, segments
 from .keywords import KeywordIndex
 from .media import AvatarDownloader
-from .menu import render_index
+from .menu import BundledIndex, load_bundled_index
 
 
 HELP = (
@@ -42,6 +44,21 @@ CONSUMED = 1
 
 class MemeBridgePlugin(MaiBotPlugin):
     config_model = BridgeConfig
+    config_widgets = [
+        ConfigWidget(id="engine_status", kind="status", label="托管引擎状态"),
+        ConfigWidget(
+            id="engine_remove",
+            kind="action",
+            label="删除托管数据",
+            confirmation="将删除本插件的托管引擎、安装包、素材及引擎临时文件。下次开启需要重新下载。确认删除？",
+        ),
+        ConfigWidget(
+            id="engine_retry",
+            kind="action",
+            label="重试托管安装/启动",
+            confirmation="将重试下载并执行固定第三方引擎及素材；同用户权限，并非沙箱。不会解除重任务熔断。确认继续？",
+        ),
+    ]
 
     @classmethod
     def build_default_config(cls) -> Dict[str, Any]:
@@ -71,22 +88,67 @@ class MemeBridgePlugin(MaiBotPlugin):
         self._cleanup_task = None
         self._clock = time.monotonic
         self._generation = 0
+        self._engine = None
+        self._menu: Optional[BundledIndex] = None
+        self._menu_error = "随包菜单尚未加载。"
+
+    async def get_config_widget_state(self) -> Dict[str, ConfigWidgetState]:
+        engine = self._engine
+        phase, detail = (engine.phase, engine.detail) if engine else ("关闭", "使用外部服务；未下载或启动托管引擎")
+        can_retry = bool(
+            engine and engine.desired is not None and phase == "失败" and time.monotonic() >= engine.retry_after
+        )
+        return {
+            "engine_remove": ConfigWidgetState(
+                text="先关闭托管开关并保存；删除后下次开启将重新下载",
+                disabled=self.config.managed.enabled or phase in {"停止", "清理"},
+            ),
+            "engine_status": ConfigWidgetState(
+                text=f"{phase}：{detail}",
+                tone="error" if phase == "失败" else "success" if phase == "就绪" else "neutral",
+            ),
+            "engine_retry": ConfigWidgetState(text="失败后等待 30 秒可重试", disabled=not can_retry),
+        }
+
+    async def on_config_widget_action(self, action_id: str) -> None:
+        if action_id == "engine_remove":
+            if self.config.managed.enabled:
+                raise ValueError("请先关闭托管开关并保存。")
+            if self._engine is None:
+                self._engine = EngineManager(self.ctx.paths.data_dir)
+            self._engine.remove()
+            return
+        if action_id != "engine_retry":
+            raise ValueError("未知运行时操作")
+        if self._engine is not None:
+            self._engine.retry()
 
     async def on_load(self) -> None:
         self._generation += 1
-        generation = self._generation
+        try:
+            # Small immutable artwork is loaded once, off-loop. Commands only
+            # compare the visible template set and reuse bytes already in memory.
+            self._menu = await disk(load_bundled_index)
+            self._menu_error = ""
+        except BridgeError as exc:
+            self._menu = None
+            self._menu_error = str(exc)
         settings = self.config.plugin
+        if self.config.managed.enabled and self._engine is None:
+            self._engine = EngineManager(self.ctx.paths.data_dir)
+        if self._engine is not None:
+            self._engine.configure(self.config.managed.enabled, self.config.managed.port)
         self._heavy_gate.configure(settings.recovery_epoch)
         self.client = MemeClient(settings)
+        if self.config.managed.enabled:
+            engine = self._engine
+            self.client.endpoint = lambda: engine.url
         self.client.gate = self._heavy_gate
         self._slots = asyncio.Semaphore(settings.concurrency)
         self._closing = False
         self.avatars = AvatarDownloader(self.config.avatar, settings.max_input_bytes)
         self._index = KeywordIndex([], [])
         if settings.enabled and self.config.keywords.enabled:
-            await self._refresh_keywords()
-            if self._closing or generation != self._generation:
-                return
             self._refresh_task = asyncio.create_task(self._refresh_loop())
         self._cleanup_task = asyncio.create_task(self._cleanup_loop(settings.cache_cleanup_interval))
 
@@ -118,10 +180,19 @@ class MemeBridgePlugin(MaiBotPlugin):
 
     async def _refresh_loop(self):
         while True:
-            await asyncio.sleep(self.config.keywords.refresh_seconds)
+            if self.config.managed.enabled and (self._engine is None or not self._engine.url):
+                await asyncio.sleep(1)
+                continue
             await self._refresh_keywords()
+            await asyncio.sleep(self.config.keywords.refresh_seconds)
 
     async def on_unload(self) -> None:
+        await self._unload_clients()
+        if self._engine is not None:
+            await self._engine.close()
+            self._engine = None
+
+    async def _unload_clients(self) -> None:
         self._closing = True
         self._generation += 1
         if self._cleanup_task is not None:
@@ -154,7 +225,9 @@ class MemeBridgePlugin(MaiBotPlugin):
             # Runner can deliver overlapping config RPCs. Finish cancellation/close
             # before replacing state, and reapply this RPC's payload after waiting.
             async with self._reload_lock:
-                await self.on_unload()
+                # A config refresh is not a plugin unload: preserve installation,
+                # child ownership and heavy-job circuit state across saves.
+                await self._unload_clients()
                 if config_data:
                     self.set_plugin_config(config_data)
                 await self.on_load()
@@ -203,7 +276,9 @@ class MemeBridgePlugin(MaiBotPlugin):
         # starts. Background work never decides whether the Host should continue.
         return {"action": "abort"}
 
-    async def _run_keyword(self, size, message, stream_id, group, user):
+    async def _run_keyword(
+        self, size: int, message: Dict[str, Any], stream_id: str, group: Dict[str, Any], user: Dict[str, Any]
+    ) -> None:
         try:
             await self.handle_command(
                 message=message,
@@ -346,15 +421,16 @@ class MemeBridgePlugin(MaiBotPlugin):
                 )
             elif self.config.menu.image_enabled and items:
                 try:
-                    data = await asyncio.to_thread(
-                        render_index,
+                    if self._menu is None:
+                        raise BridgeError(self._menu_error)
+                    data = self._menu.image_for(
                         items,
                         total,
                         self.config.menu.max_pixels,
                         settings.max_output_bytes,
                     )
                     if not await self.ctx.send.image(base64.b64encode(data).decode("ascii"), stream_id):
-                        raise BridgeError("索引图已绘制，但宿主未确认发送；未重试。")
+                        raise BridgeError("索引图已读取，但宿主未确认发送；未重试。")
                     return
                 except BridgeError as exc:
                     if not self.config.menu.text_fallback:
@@ -421,7 +497,7 @@ class MemeBridgePlugin(MaiBotPlugin):
         platform: str = "",
         _keyword: bool = False,
         **kwargs: Any,
-    ):
+    ) -> Tuple[bool, None, int]:
         if self._closing or self.client is None:
             return False, None, CONSUMED
         settings = self.client.settings

@@ -404,12 +404,10 @@ def test_real_sdk_config_manifest():
     assert manifest["dependencies"] == [
         {"type": "python_package", "name": "httpx", "version_spec": ">=0.27,<0.29"},
         {"type": "python_package", "name": "httpcore", "version_spec": ">=1,<2"},
-        {"type": "python_package", "name": "Pillow", "version_spec": ">=10,<13"},
     ]
     assert (root / "requirements.txt").read_text().splitlines() == [
         "httpx>=0.27,<0.29",
         "httpcore>=1,<2",
-        "Pillow>=10,<13",
     ]
     assert not BridgeConfig().plugin.enabled
     p = create_plugin()
